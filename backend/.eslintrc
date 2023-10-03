@@ -1,0 +1,69 @@
+{
+  "root": true,
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser",
+    "ecmaFeatures": {
+      "jsx": false
+    }
+  },
+  "plugins": [
+    "functional",
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "@typescript-eslint/quotes": 0,
+    "no-console": "error",
+    "array-callback-return": "error",
+    "no-constructor-return": "error",
+    "no-duplicate-imports": "off",
+    "no-new-native-nonconstructor": "error",
+    "@typescript-eslint/no-use-before-define": "off",
+    "no-self-compare": "error",
+    "no-template-curly-in-string": "error",
+    "no-unused-private-class-members": "error",
+    "class-methods-use-this": "error",
+    "consistent-return": "error",
+    "default-case": "error",
+    "dot-notation": "error",
+    "eqeqeq": "error",
+    "init-declarations": "error",
+    "no-eq-null": "error",
+    "no-extend-native": "error",
+    "no-implicit-coercion": "error",
+    "@typescript-eslint/no-unused-vars": "off",
+    "indent": "off",
+    "@typescript-eslint/indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1,
+        "ObjectExpression": 1,
+        "MemberExpression": 1,
+        "CallExpression": {
+          "arguments": 1
+        },
+        "ignoredNodes": [
+          "PropertyDefinition[decorators]",
+          "TSUnionType",
+          "FunctionExpression[params]",
+          "CallExpression[arguments]"
+        ]
+      }
+    ],
+    "no-implicit-globals": "error",
+    "no-new": "error",
+    "no-new-func": "error",
+    "no-new-object": "error",
+    "no-var": "error",
+    "prefer-object-spread": "error",
+    "require-await": "error",
+    "yoda": "error",
+    "explicit-function-return-type": "off",
+    "eol-last": [
+      "error",
+      "never"
+    ],
+    "sort-keys": "off",
+    "no-undef-init": "off"
+  }
+}
