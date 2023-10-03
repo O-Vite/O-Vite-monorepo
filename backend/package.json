@@ -1,0 +1,26 @@
+{
+	"name": "fastify-template",
+	"version": "1.0.0",
+	"packageManager": "pnpm@7.28.0",
+	"scripts": {
+		"dev": "nodemon --watch './src/**/*.ts' --exec ts-node --esm ./src/index.ts",
+		"build": "tsc"
+	},
+	"dependencies": {
+		"cors": "^2.8.5",
+		"dotenv": "^16.3.1",
+		"fastify": "^4.23.2",
+		"fastify-jwt": "^4.2.0",
+		"type-fest": "^3.12.0",
+		"typeorm": "^0.3.17"
+	},
+	"devDependencies": {
+		"@types/cors": "^2.8.14",
+		"@types/node": "^20.8.2",
+		"eslint": "^8.44.0",
+		"eslint-plugin-functional": "^5.0.8",
+		"nodemon": "^3.0.1",
+		"ts-node": "^10.9.1",
+		"typescript": "^5.2.2"
+	}
+}

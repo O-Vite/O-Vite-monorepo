@@ -1,0 +1,35 @@
+# Ignore les fichiers système
+.DS_Store
+
+# Dossiers à ignorer
+node_modules/
+build/
+dist/
+pnpm-lock.yaml   # Ignorer le fichier de verrouillage pnpm
+
+# Fichiers de configuration spécifiques à certaines plateformes (à ajuster si nécessaire)
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Fichiers de build React (créés par Create React App)
+*.js.map
+*.css.map
+*.js.LICENSE.txt
+*.hot-update.json
+
+# Fichiers de dépendances pnpm
+.shrinkwrap.yaml  # Ignorer le fichier shrinkwrap de pnpm
+
+# Fichiers temporaires
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignorer les dossiers de cache pnpm
+pnpm-store/
+.pnpm/
+
+# Ignorer les fichiers pnpm-lock
+pnpm-lock.yaml

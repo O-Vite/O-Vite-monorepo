@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "module": "CommonJS",
+    "target": "ESNext",                           
+    "strict": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "incremental": false,
+    "noImplicitOverride": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictFunctionTypes": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": true,
+    "allowJs": false,
+    "forceConsistentCasingInFileNames": true,  
+    "outDir": "./build", 
+    "rootDir": "./src",
+    "baseUrl": ".", 
+    "paths": {
+      "~/*": [
+        "src/*",
+      ],
+      "*": ["node_modules/*"]
+    },                                  
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+  ],
+  "ts-node": {
+    "esm": true,  
+  },
+}
