@@ -1,5 +1,5 @@
-import { BaseEntity } from 'src/generic/base.entity';
 import { Column, Entity } from 'typeorm';
+import { BaseEntity } from '../genericApi/baseEntity';
 
 @Entity()
 export class Article extends BaseEntity {
@@ -7,16 +7,16 @@ export class Article extends BaseEntity {
     type: 'varchar',
     nullable: false,
   })
-  title: string = '';
+  title: string;
   @Column({
     type: 'varchar',
     nullable: true,
   })
-  content: string = '';
+  content: string;
 
   @Column({
     type: 'varchar',
     nullable: false,
   })
-  confidential: string = '';
+  confidential: string;
 }

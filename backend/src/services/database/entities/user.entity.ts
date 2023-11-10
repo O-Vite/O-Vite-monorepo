@@ -7,7 +7,7 @@ export class CreateUserDto {
     type: 'varchar',
     length: 255,
     nullable: false,
-    unique:x true,
+    unique: true,
   })
   public email: TEmail;
 
