@@ -1,54 +1,162 @@
 import { dataSource } from 'src/services/database/entities/database.service';
-import { Class as TClass } from 'type-fest';
 import { BaseEntity } from '../genericApi/baseEntity';
-import { DeepPartial, FindManyOptions, FindOneOptions, In } from 'typeorm';
+import {
+  DeepPartial,
+  Equal,
+  FindManyOptions,
+  FindOneOptions,
+  FindOptionsWhere,
+  In,
+  ObjectType,
+} from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { A, D } from '@mobily/ts-belt';
-export class Crudator<T extends BaseEntity> {
+import {
+  TPagination,
+  assertListWhere,
+  buildWhereArray,
+} from './where.crudator';
+
+export type TObjectValueOperatorWhere<T> =
+  | {
+      key: keyof T;
+      operator: 'LessThan' | 'LessThanOrEqual' | 'MoreThan' | 'MoreThanOrEqual';
+      value: string | number | boolean;
+    }
+  | {
+      key: keyof T;
+      operator: 'Equal' | 'Like' | 'ILike';
+      value: string | number | boolean;
+    }
+  | {
+      key: keyof T;
+      operator: 'Between';
+      value: [string | number | boolean, string | number | boolean];
+    }
+  | {
+      key: keyof T;
+      operator: 'In' | 'Any';
+      value: Array<string | number | boolean>;
+    }
+  | {
+      key: keyof T;
+      operator: 'IsNull';
+      value: null;
+    }
+  | {
+      key: keyof T;
+      operator: 'Raw';
+      value: string;
+    }
+  | {
+      key: keyof T;
+      operator: 'ArrayContains' | 'ArrayContainedBy' | 'ArrayOverlap';
+      value: Array<string | number | boolean>;
+    }
+  | {
+      key: keyof T;
+      operator: 'Not';
+      value: TObjectValueOperatorWhere<T>;
+    };
+
+type TSettingCrudator<
+  TEntity extends BaseEntity,
+  TInsertDto extends DeepPartial<TEntity>,
+  UpdateDto extends DeepPartial<TEntity>,
+  TSelectDto extends DeepPartial<TEntity>,
+> = {
+  entityDB: ObjectType<TEntity>;
+  selectKeys: Array<keyof TSelectDto>;
+  selectDto: TSelectDto;
+  insertDto: TInsertDto;
+  updateDto: UpdateDto;
+  wherePrefilter: TObjectValueOperatorWhere<TEntity>[];
+};
+
+export class Crudator<
+  T extends BaseEntity,
+  InsertDto extends DeepPartial<T>,
+  UpdateDto extends DeepPartial<T>,
+  TSelectDto extends DeepPartial<T>,
+> {
   private EM = dataSource.manager;
-  // TODO: fournir selectDto ,entityDB, insertDto, updateDto, where prefilters
+  private preFilterBuilded = buildWhereArray(this.SC.wherePrefilter);
   constructor(
-    private readonly entityDb: TClass<T>,
-    private readonly select: Array<keyof T>,
+    private readonly SC: TSettingCrudator<T, InsertDto, UpdateDto, TSelectDto>,
   ) {}
 
-  async fetchAll(select: Array<keyof T> = this.select): Promise<T[]> {
-    return this.EM.find(this.entityDb, {
+  async fetchAll(
+    filter: string = '',
+    paginate: string = '',
+    select: Array<keyof TSelectDto> = this.SC.selectKeys,
+  ): Promise<TSelectDto[]> {
+    const filterParsed =
+      filter !== ''
+        ? (JSON.parse(filter) as TObjectValueOperatorWhere<T>[])
+        : [];
+    const paginateParsed = JSON.parse(paginate) as TPagination;
+    assertListWhere(filterParsed);
+
+    return this.EM.find(this.SC.entityDB, {
       select: select,
+      skip: paginateParsed?.skip,
+      take: paginateParsed?.take,
+      where: {
+        ...this.preFilterBuilded,
+        ...buildWhereArray(filterParsed),
+      } as FindOptionsWhere<any>,
     });
   }
 
   async fetchById(
     id: T['id'],
-    select: Array<keyof T> = this.select,
-  ): Promise<T | null> {
-    return this.EM.findOne(this.entityDb, {
+    select: Array<keyof TSelectDto> = this.SC.selectKeys,
+  ): Promise<TSelectDto | null> {
+    //@ts-ignore
+    const res = await this.EM.find(this.SC.entityDB, {
       select,
-      where: { id },
-    } as FindOneOptions<T>);
+      where: { id, ...this.preFilterBuilded },
+    } as FindOptionsWhere<TSelectDto>[]);
+    //@ts-ignore
+    return res.length > 0 ? res[0] : null;
   }
 
-  async insert(data: Partial<T>[]): Promise<T[]> {
-    const res = await this.EM.save(this.entityDb, data as T[]);
-    return res.map((e) => D.selectKeys(e, this.select));
+  async insert(data: InsertDto[]): Promise<TSelectDto[]> {
+    const res = await this.EM.save(this.SC.entityDB, data as InsertDto[], {
+      chunk: 500,
+    });
+    //@ts-ignore
+    return res.map((el) => D.selectKeys(el, this.SC.selectKeys));
   }
 
-  async patch(id: T['id'], data: DeepPartial<T>): Promise<void> {
+  async patch(id: T['id'], data: UpdateDto): Promise<void> {
     const isExists = await this.isExists(id);
     if (!isExists) {
       throw new NotFoundException("Entity doesn't exist");
     }
 
-    this.EM.save(this.entityDb, { ...data, id } as QueryDeepPartialEntity<T>);
+    const res = await this.EM.save(this.SC.entityDB, {
+      ...data,
+      id,
+    } as QueryDeepPartialEntity<T>);
+
+    console.log(res);
+
+    //@ts-ignore
+    // return D.selectKeys(res, this.SC.selectKeys);
   }
 
   async delete(id: T['id']): Promise<void> {
-    await this.EM.delete(this.entityDb, id);
+    await this.EM.delete(this.SC.entityDB, id);
   }
 
+  // async deleteAll(): Promise<void> {
+  //   await this.EM.clear(this.SC.entityDB);
+  // }
+
   async isExists(id: T['id']) {
-    return this.EM.exists(this.entityDb, {
+    return this.EM.exists(this.SC.entityDB, {
       where: { id },
     } as FindManyOptions<T>);
   }
@@ -66,18 +174,19 @@ export class Crudator<T extends BaseEntity> {
 
   async bulkFetchById(
     ids: T['id'][],
-    select: Array<keyof T> = this.select,
-  ): Promise<T[]> {
-    return this.EM.find(this.entityDb, {
+    select: Array<keyof TSelectDto> = this.SC.selectKeys,
+  ): Promise<TSelectDto[]> {
+    //@ts-ignore
+    return this.EM.find(this.SC.entityDB, {
       select,
-      where: { id: In(ids) },
+      where: { id: In(ids), ...this.preFilterBuilded },
     } as FindManyOptions<T>);
   }
 
-  async bulkPatch(ids: T['id'][], data: DeepPartial<T>[]): Promise<void> {
+  async bulkPatch(ids: T['id'][], data: UpdateDto[]): Promise<void> {
     const IsExists = await this.bulkIsExists(ids);
 
-    this.EM.save(this.entityDb, {
+    this.EM.save(this.SC.entityDB, {
       ...data,
       id: In(IsExists.true),
     } as QueryDeepPartialEntity<T>);
@@ -91,51 +200,8 @@ export class Crudator<T extends BaseEntity> {
   }
 
   async bulkDelete(ids: T['id'][]): Promise<void> {
-    await this.EM.delete(this.entityDb, {
+    await this.EM.delete(this.SC.entityDB, {
       id: In(ids),
     } as FindManyOptions<T>);
   }
 }
-
-// async insert(data: Partial<T>) {
-//   return repo.save(data);
-// },
-// async delete(id: number) {
-//   return repo.delete(id);
-// },
-// async patch(id: number, data: Partial<T>) {
-//   return repo.update(id, data);
-// },
-
-//   async fetchById(id: TId) {
-//     return this.EM.findOneBy<ObjectType<T>>(this.entityDb, { id });
-//   }
-//   async insert(data: DeepPartial<BaseEntity>) {
-//     return this.EM.save(this.entityDb, data as T);
-//   }
-//   async delete(id: TId) {
-//     return this.EM.delete(this.entityDb, id);
-//   }
-//   async patch(id: TId, data: DeepPartial<BaseEntity>) {
-//     const isExists = this.fetchById(id) !== null;
-//     if (!isExists) {
-//       throw new NotFoundException("Entity doesn't exist");
-//     }
-//     this.EM.update<ObjectType<T>>(this.entityDb, id, data);
-//   }
-//   // async fetchById(id: TId) {
-//   //   return this.EM.findOneBy(this.EntityDb, { id });
-//   // }
-//   // async insert(data: DeepPartial<BaseEntity>) {
-//   //   return this.EM.save(this.EntityDb, data);
-//   // }
-//   // async delete(id: TId) {
-//   //   await this.EM.delete(this.EntityDb, id);
-//   // }
-//   // async patch(id: TId, data: DeepPartial<BaseEntity>) {
-//   //   const isExists = (await this.fetchById(id)) !== null;
-//   //   if (!isExists) {
-//   //     throw new NotFoundException("Entity doesn't exist");
-//   //   }
-//   //   this.EM.update(this.EntityDb, id, data);
-//   // }

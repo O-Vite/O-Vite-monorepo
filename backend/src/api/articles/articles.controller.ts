@@ -1,24 +1,14 @@
 import { Article } from './articles.entity';
-import {
-  Body,
-  Catch,
-  Controller,
-  Query,
-  UseFilters,
-  applyDecorators,
-} from '@nestjs/common';
+import { Controller, Param, Query } from '@nestjs/common';
 
-import { Crudator } from '../crudator/service.crudator';
 import {
-  TypedBody,
-  TypedException,
-  TypedParam,
-  TypedQuery,
-  TypedRoute,
-} from '@nestia/core';
+  Crudator,
+  TObjectValueOperatorWhere,
+} from '../crudator/service.crudator';
+import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
 import typia, { IJsonApplication } from 'typia';
-import { CustomExceptionFilter } from './customError';
 import { TId } from 'src/services/database/entities/user.entity';
+import { TPagination } from '../crudator/where.crudator';
 
 type TOmitStrict<T, K extends keyof T> = Omit<T, K>;
 
@@ -34,6 +24,7 @@ const extractListKeyJsonAjv = <T>(json: IJsonApplication) => {
 export type ArticleDto = TOmitStrict<Article, 'confidential' | 'content'>;
 export type ArticleCreateDto = TOmitStrict<Article, 'id'>;
 export type ArticleUpdateDto = Partial<ArticleCreateDto>;
+
 const keysArticleDto = extractListKeyJsonAjv<ArticleDto>(
   genSwagger<[ArticleDto]>(),
 );
@@ -52,30 +43,34 @@ const keysArticleDtoAdmin = extractListKeyJsonAjv<ArticleDtoAdmin>(
 
 @Controller('articles/user')
 export class ArticleControllerUser {
-  private readonly crudator = new Crudator(Article, keysArticleDto);
+  private readonly crudator = new Crudator({
+    entityDB: Article,
+    selectKeys: keysArticleDto,
+    selectDto: {} as ArticleDto,
+    insertDto: {} as ArticleCreateDto,
+    updateDto: {} as ArticleUpdateDto,
+    wherePrefilter: [{ key: 'title', operator: 'Equal', value: 'matt' }],
+  });
 
   @TypedRoute.Get()
-  async getAll(): Promise<ArticleDto[]> {
-    return this.crudator.fetchAll();
+  async getAll(
+    @Query('filter') filter: string = '',
+    @Query('pagination') pagination: string = '',
+  ): Promise<ArticleDto[]> {
+    return this.crudator.fetchAll(filter, pagination);
   }
 
-  @TypedRoute.Get('/one/:id')
+  @TypedRoute.Get(':id')
   async getById(@TypedParam('id') id: TId): Promise<ArticleDto | null> {
     return this.crudator.fetchById(id);
   }
 
-  @TypedRoute.Post('/bulk')
+  @TypedRoute.Post('/bulk/fetchById')
   async bulkFetchById(
     @TypedBody() json: { ids: TId[] },
   ): Promise<ArticleDto[]> {
     return this.crudator.bulkFetchById(json.ids);
   }
-
-  // @TypedRoute.Get('/bulk')
-  // async bulkFetchById(@TypedQuery('ids') ids: TId[]): Promise<ArticleDto[]> {
-  //   console.log(typeof ids);
-  //   return this.crudator.bulkFetchById(ids);
-  // }
 
   @TypedRoute.Post()
   async create(@TypedBody() entity: ArticleCreateDto[]): Promise<ArticleDto[]> {
@@ -96,12 +91,12 @@ export class ArticleControllerUser {
   }
 }
 
-@Controller('articles/admin')
-export class ArticleControllerAdmin {
-  private readonly crudator = new Crudator(Article, keysArticleDtoAdmin);
+// @Controller('articles/admin')
+// export class ArticleControllerAdmin {
+//   private readonly crudator = new Crudator(Article, keysArticleDtoAdmin);
 
-  @TypedRoute.Get()
-  async getAllAdminn(): Promise<ArticleDtoAdmin[]> {
-    return 0 as any;
-  }
-}
+//   @TypedRoute.Get()
+//   async getAllAdminn(): Promise<ArticleDtoAdmin[]> {
+//     return 0 as any;
+//   }
+// }
