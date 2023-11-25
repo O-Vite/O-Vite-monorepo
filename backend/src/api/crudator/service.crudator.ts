@@ -95,7 +95,8 @@ export class Crudator<
       filter !== ''
         ? (JSON.parse(filter) as TObjectValueOperatorWhere<T>[])
         : [];
-    const paginateParsed = JSON.parse(paginate) as TPagination;
+    const paginateParsed =
+      paginate !== '' ? (JSON.parse(paginate) as TPagination) : null;
     assertListWhere(filterParsed);
 
     return this.EM.find(this.SC.entityDB, {
@@ -124,10 +125,14 @@ export class Crudator<
 
   async insert(data: InsertDto[]): Promise<TSelectDto[]> {
     const res = await this.EM.save(this.SC.entityDB, data as InsertDto[], {
-      chunk: 500,
+      chunk: 10000,
     });
+
     //@ts-ignore
-    return res.map((el) => D.selectKeys(el, this.SC.selectKeys));
+    const res2 = res.map((el) => D.selectKeys(el, this.SC.selectKeys));
+    console.log(res2[0]);
+    //@ts-ignore
+    return res2;
   }
 
   async patch(id: T['id'], data: UpdateDto): Promise<void> {
@@ -140,11 +145,6 @@ export class Crudator<
       ...data,
       id,
     } as QueryDeepPartialEntity<T>);
-
-    console.log(res);
-
-    //@ts-ignore
-    // return D.selectKeys(res, this.SC.selectKeys);
   }
 
   async delete(id: T['id']): Promise<void> {

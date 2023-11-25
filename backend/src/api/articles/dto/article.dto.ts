@@ -12,6 +12,7 @@ import { Article } from '../articles.entity';
 // };
 
 export type ArticleDto = Omit<Article, 'confidential' | 'id'>;
+
 // export type ArticleDtoBis = Omit<Article, 'confidential' | 'content'>;
 
 // export const toArticleDto = (article: Article): ArticleDto => {

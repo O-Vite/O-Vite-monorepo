@@ -10,16 +10,35 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
     "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "incremental": false,
+    "noImplicitOverride": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictFunctionTypes": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
     "strictNullChecks": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
+    "allowJs": false,
+    "forceConsistentCasingInFileNames": true,
     "plugins": [
       {
         "transform": "@nestia/core/lib/transform",
+        "functional": true,
         /**
          * Validate request body.
          * 
@@ -43,8 +62,18 @@
         "stringify": "assert"
       },
       {
-        "transform": "typia/lib/transform"
+        "transform": "typia/lib/transform",
+        "functional": true
       }
     ]
-  }
+  },
+  "paths": {
+    "~/*": [
+      "src/*"
+    ]
+  },
+  "exclude": [
+    "dist",
+    "node_modules",
+  ]
 }

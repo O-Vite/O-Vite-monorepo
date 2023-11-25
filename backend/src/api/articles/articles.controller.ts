@@ -6,9 +6,11 @@ import {
   TObjectValueOperatorWhere,
 } from '../crudator/service.crudator';
 import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
-import typia, { IJsonApplication } from 'typia';
+import typia, { IJsonApplication, tags } from 'typia';
 import { TId } from 'src/services/database/entities/user.entity';
 import { TPagination } from '../crudator/where.crudator';
+import { TOmitBaseEntity } from '../genericApi/baseEntity';
+import { EntityManager } from 'typeorm';
 
 type TOmitStrict<T, K extends keyof T> = Omit<T, K>;
 
@@ -22,7 +24,7 @@ const extractListKeyJsonAjv = <T>(json: IJsonApplication) => {
 };
 
 export type ArticleDto = TOmitStrict<Article, 'confidential' | 'content'>;
-export type ArticleCreateDto = TOmitStrict<Article, 'id'>;
+export type ArticleCreateDto = TOmitBaseEntity<Article>;
 export type ArticleUpdateDto = Partial<ArticleCreateDto>;
 
 const keysArticleDto = extractListKeyJsonAjv<ArticleDto>(
@@ -41,6 +43,8 @@ const keysArticleDtoAdmin = extractListKeyJsonAjv<ArticleDtoAdmin>(
 //   typeItemDto: xx,
 // };
 
+const sayhello = () => 'hello';
+
 @Controller('articles/user')
 export class ArticleControllerUser {
   private readonly crudator = new Crudator({
@@ -52,12 +56,35 @@ export class ArticleControllerUser {
     wherePrefilter: [{ key: 'title', operator: 'Equal', value: 'matt' }],
   });
 
+  // @TypedRoute.Get('hello')
+  // async sayHello(
+  //   @TypedQuery() operator: { operator: boolean | string },
+  // ): Promise<1> {
+  //   console.log(operator);
+  //   return 1;
+  // }
+
   @TypedRoute.Get()
   async getAll(
     @Query('filter') filter: string = '',
     @Query('pagination') pagination: string = '',
   ): Promise<ArticleDto[]> {
-    return this.crudator.fetchAll(filter, pagination);
+    const res = await this.crudator.fetchAll(filter, pagination);
+    // //@ts-ignore
+    // console.log(typia.json.assertStringify<Date>(res[0].createdAt));
+    //@ts-ignore
+    return res;
+    // return res.map((x) => ({
+    //   ...x,
+    //   createdAt: new Date(),
+    //   updatedAt: new Date(),
+    // }));
+  }
+
+  @TypedRoute.Post('aa')
+  async getPostTest(test: TObjectValueOperatorWhere<Article>): Promise<null> {
+    //@ts-ignore
+    return null;
   }
 
   @TypedRoute.Get(':id')
@@ -100,3 +127,25 @@ export class ArticleControllerUser {
 //     return 0 as any;
 //   }
 // }
+
+const fn = (str: number) => str;
+
+type ExtractType<T> = T extends (arg: infer U) => any ? U : never;
+type Res = ExtractType<typeof fn>;
+
+interface User {
+  name: string;
+  animal: {
+    name: string;
+  };
+}
+
+type KeysOfNestedKeyObject<T> = {
+  [K in keyof T]: T[K] extends object ? K : never;
+}[keyof T];
+
+type Res22 = KeysOfNestedKeyObject<User>;
+
+const fn = (str: number) => str;
+
+fn("f")
