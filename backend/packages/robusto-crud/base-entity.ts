@@ -31,8 +31,6 @@ export class BaseEntityDb {
     transformer: TransformDate,
   })
   public updatedAt!: string & tags.Format<'date-time'>;
-
-  public testDate!: string & tags.Format<'date-time'>;
 }
 
 export type TOmitBaseEntity<T, U extends keyof T = never> = Omit<

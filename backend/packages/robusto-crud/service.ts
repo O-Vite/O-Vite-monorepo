@@ -1,5 +1,5 @@
 import { dataSource } from 'src/services/database/database.service';
-import { BaseEntityDb } from './baseEntityDb.crudator';
+import { BaseEntityDb } from './base-entity';
 import {
   DeepPartial,
   FindManyOptions,
@@ -15,7 +15,7 @@ import {
   TPagination,
   assertListWhere,
   buildWhereArray,
-} from './where.crudator';
+} from './filter-query';
 
 type TSettingCrudator<
   TEntity extends BaseEntityDb,

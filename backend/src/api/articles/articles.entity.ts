@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import { BaseEntityDb } from '../../../packages/robusto-crud/baseEntityDb.crudator';
+import { BaseEntityDb } from '../../../packages/robusto-crud/base-entity';
 
 @Entity()
 export class Article extends BaseEntityDb {
