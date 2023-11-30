@@ -1,22 +1,22 @@
 import { Column, Entity } from 'typeorm';
-import { BaseEntity } from '../genericApi/baseEntity';
+import { BaseEntityDb } from '../../../packages/robusto-crud/baseEntityDb.crudator';
 
 @Entity()
-export class Article extends BaseEntity {
+export class Article extends BaseEntityDb {
   @Column({
     type: 'varchar',
     nullable: false,
   })
-  title: string;
+  title!: string;
   @Column({
     type: 'varchar',
     nullable: true,
   })
-  content: string;
+  content!: string;
 
   @Column({
     type: 'varchar',
     nullable: false,
   })
-  confidential: string;
+  confidential!: string;
 }

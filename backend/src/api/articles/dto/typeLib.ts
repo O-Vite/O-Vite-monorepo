@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/api/genericApi/baseEntity';
+import { BaseEntityDb } from 'packages/robusto-crud/baseEntityDb.crudator';
 import { ObjectType } from 'typeorm';
 import { TClass } from 'utils/types';
 
@@ -48,10 +48,10 @@ type TSettingController<T extends TClass> = TSettingControllerBase<ERole, T>;
 // const res = typia.json.assertParse<Article[]>;
 // const rr = typia.json.createAssertParse<Article[]>;
 
-export type TCustomSetting<EntityDB extends BaseEntity> = {
+export type TCustomSetting<EntityDB extends BaseEntityDb> = {
   itemDb: ObjectType<EntityDB>;
   itemDto: TFnDto<Partial<ObjectType<EntityDB>>>;
   typeItemDto: Partial<EntityDB>;
 };
 
-export const rrr: ObjectType<BaseEntity> = BaseEntity;
+export const rrr: ObjectType<BaseEntityDb> = BaseEntityDb;

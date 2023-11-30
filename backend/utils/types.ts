@@ -1,5 +1,3 @@
-import { Jsonify } from 'type-fest';
-
 export type TClass<T = unknown> = new (...args: any[]) => T;
 
 export type TFn = (...args: any[]) => any;

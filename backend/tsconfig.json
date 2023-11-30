@@ -18,7 +18,7 @@
     "resolveJsonModule": true,
     "incremental": false,
     "noImplicitOverride": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noImplicitThis": true,
     "strictFunctionTypes": true,
     "alwaysStrict": true,
@@ -28,6 +28,7 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
     "noPropertyAccessFromIndexSignature": false,
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": true,
@@ -35,6 +36,7 @@
     "strictNullChecks": true,
     "allowJs": false,
     "forceConsistentCasingInFileNames": true,
+
     "plugins": [
       {
         "transform": "@nestia/core/lib/transform",

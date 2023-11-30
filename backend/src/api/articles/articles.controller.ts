@@ -1,16 +1,9 @@
 import { Article } from './articles.entity';
 import { Controller, Param, Query } from '@nestjs/common';
 
-import {
-  Crudator,
-  TObjectValueOperatorWhere,
-} from '../crudator/service.crudator';
-import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core';
+import { Crudator } from '../../../packages/robusto-crud/service.crudator';
+import { TypedBody, TypedParam, TypedRoute } from '@nestia/core';
 import typia, { IJsonApplication, tags } from 'typia';
-import { TId } from 'src/services/database/entities/user.entity';
-import { TPagination } from '../crudator/where.crudator';
-import { TOmitBaseEntity } from '../genericApi/baseEntity';
-import { EntityManager } from 'typeorm';
 
 type TOmitStrict<T, K extends keyof T> = Omit<T, K>;
 
@@ -19,7 +12,7 @@ const genSwagger = typia.json.application;
 const extractListKeyJsonAjv = <T>(json: IJsonApplication) => {
   const res = json.components.schemas;
   const keys = Object.keys(res!)[0];
-  const ress = Object.keys(res![keys]?.['properties']);
+  const ress = Object.keys(res![keys]?.properties);
   return typia.assertEquals<Array<keyof T>>(ress);
 };
 
@@ -32,18 +25,6 @@ const keysArticleDto = extractListKeyJsonAjv<ArticleDto>(
 );
 
 export type ArticleDtoAdmin = TOmitStrict<Article, 'confidential' | 'content'>;
-const keysArticleDtoAdmin = extractListKeyJsonAjv<ArticleDtoAdmin>(
-  genSwagger<[ArticleDtoAdmin]>(),
-);
-// const xx = {} as ArticleDto;
-
-// const structure: TCustomSetting<Article> = {
-//   itemDb: Article,
-//   itemDto: typia.createAssert<ArticleDto[]>(),
-//   typeItemDto: xx,
-// };
-
-const sayhello = () => 'hello';
 
 @Controller('articles/user')
 export class ArticleControllerUser {
@@ -81,12 +62,6 @@ export class ArticleControllerUser {
     // }));
   }
 
-  @TypedRoute.Post('aa')
-  async getPostTest(test: TObjectValueOperatorWhere<Article>): Promise<null> {
-    //@ts-ignore
-    return null;
-  }
-
   @TypedRoute.Get(':id')
   async getById(@TypedParam('id') id: TId): Promise<ArticleDto | null> {
     return this.crudator.fetchById(id);
@@ -117,35 +92,3 @@ export class ArticleControllerUser {
     return this.crudator.delete(id);
   }
 }
-
-// @Controller('articles/admin')
-// export class ArticleControllerAdmin {
-//   private readonly crudator = new Crudator(Article, keysArticleDtoAdmin);
-
-//   @TypedRoute.Get()
-//   async getAllAdminn(): Promise<ArticleDtoAdmin[]> {
-//     return 0 as any;
-//   }
-// }
-
-const fn = (str: number) => str;
-
-type ExtractType<T> = T extends (arg: infer U) => any ? U : never;
-type Res = ExtractType<typeof fn>;
-
-interface User {
-  name: string;
-  animal: {
-    name: string;
-  };
-}
-
-type KeysOfNestedKeyObject<T> = {
-  [K in keyof T]: T[K] extends object ? K : never;
-}[keyof T];
-
-type Res22 = KeysOfNestedKeyObject<User>;
-
-const fn = (str: number) => str;
-
-fn("f")

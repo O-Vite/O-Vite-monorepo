@@ -15,10 +15,11 @@ import {
   ArrayContains,
   ArrayContainedBy,
   ArrayOverlap,
+  FindOperator,
 } from 'typeorm';
 
 type StringNumberBoolean = string | number | boolean;
-type TObjectValueOperatorWhere<T> =
+export type TObjectValueOperatorWhere<T> =
   | {
       key: keyof T;
       operator: 'LessThan' | 'LessThanOrEqual' | 'MoreThan' | 'MoreThanOrEqual';
@@ -66,7 +67,9 @@ export const buildWhereArray = <T>(where: TObjectValueOperatorWhere<T>[]) => {
   }, {});
 };
 
-const buildWhereFunction = <T>(where: TObjectValueOperatorWhere<T>) => {
+const buildWhereFunction = <T>(
+  where: TObjectValueOperatorWhere<T>,
+): FindOperator<any> => {
   switch (where.operator) {
     case 'LessThan':
       return LessThan(where.value);
@@ -109,7 +112,9 @@ const assertKeysExist = <T extends object>(keys: Array<keyof T>, obj: T) => {
   return keys.every((key) => key in obj);
 };
 
-export const assertListWhere = <T>(where: TObjectValueOperatorWhere<T>[]) => {
+export const assertListWhere = <T>(
+  where: TObjectValueOperatorWhere<T>[],
+): void => {
   if (!where.every((el) => assertKeysExist(['key', 'operator', 'value'], el))) {
     throw new Error(`Key or operator or value is missing`);
   }
@@ -118,7 +123,7 @@ export const assertListWhere = <T>(where: TObjectValueOperatorWhere<T>[]) => {
   }
 };
 
-const assertWhere = <T>(where: TObjectValueOperatorWhere<T>) => {
+const assertWhere = <T>(where: TObjectValueOperatorWhere<T>): boolean => {
   switch (where.operator) {
     case 'LessThan':
     case 'LessThanOrEqual':

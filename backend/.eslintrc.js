@@ -30,7 +30,7 @@ module.exports = {
     "no-self-compare": "error",
     "no-template-curly-in-string": "error",
     "no-unused-private-class-members": "error",
-    "class-methods-use-this": "error",
+    "class-methods-use-this": "off",
     "consistent-return": "error",
     "default-case": "error",
     "dot-notation": "error",
@@ -41,7 +41,7 @@ module.exports = {
     "no-implicit-coercion": "error",
     "@typescript-eslint/no-unused-vars": "off",
     "indent": "off",
-    
+    "@typescript-eslint/ban-ts-comment": "off",
     "no-implicit-globals": "error",
     "no-new": "error",
     "no-new-func": "error",
@@ -51,7 +51,6 @@ module.exports = {
     "require-await": "off",
     "yoda": "error",
     "explicit-function-return-type": "off",
-
     "sort-keys": "off",
     "no-undef-init": "off"
   },

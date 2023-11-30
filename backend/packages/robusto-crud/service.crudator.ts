@@ -1,10 +1,8 @@
-import { dataSource } from 'src/services/database/entities/database.service';
-import { BaseEntity } from '../genericApi/baseEntity';
+import { dataSource } from 'src/services/database/database.service';
+import { BaseEntityDb } from './baseEntityDb.crudator';
 import {
   DeepPartial,
-  Equal,
   FindManyOptions,
-  FindOneOptions,
   FindOptionsWhere,
   In,
   ObjectType,
@@ -13,55 +11,14 @@ import { NotFoundException } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { A, D } from '@mobily/ts-belt';
 import {
+  TObjectValueOperatorWhere,
   TPagination,
   assertListWhere,
   buildWhereArray,
 } from './where.crudator';
 
-export type TObjectValueOperatorWhere<T> =
-  | {
-      key: keyof T;
-      operator: 'LessThan' | 'LessThanOrEqual' | 'MoreThan' | 'MoreThanOrEqual';
-      value: string | number | boolean;
-    }
-  | {
-      key: keyof T;
-      operator: 'Equal' | 'Like' | 'ILike';
-      value: string | number | boolean;
-    }
-  | {
-      key: keyof T;
-      operator: 'Between';
-      value: [string | number | boolean, string | number | boolean];
-    }
-  | {
-      key: keyof T;
-      operator: 'In' | 'Any';
-      value: Array<string | number | boolean>;
-    }
-  | {
-      key: keyof T;
-      operator: 'IsNull';
-      value: null;
-    }
-  | {
-      key: keyof T;
-      operator: 'Raw';
-      value: string;
-    }
-  | {
-      key: keyof T;
-      operator: 'ArrayContains' | 'ArrayContainedBy' | 'ArrayOverlap';
-      value: Array<string | number | boolean>;
-    }
-  | {
-      key: keyof T;
-      operator: 'Not';
-      value: TObjectValueOperatorWhere<T>;
-    };
-
 type TSettingCrudator<
-  TEntity extends BaseEntity,
+  TEntity extends BaseEntityDb,
   TInsertDto extends DeepPartial<TEntity>,
   UpdateDto extends DeepPartial<TEntity>,
   TSelectDto extends DeepPartial<TEntity>,
@@ -75,7 +32,7 @@ type TSettingCrudator<
 };
 
 export class Crudator<
-  T extends BaseEntity,
+  T extends BaseEntityDb,
   InsertDto extends DeepPartial<T>,
   UpdateDto extends DeepPartial<T>,
   TSelectDto extends DeepPartial<T>,
@@ -101,8 +58,8 @@ export class Crudator<
 
     return this.EM.find(this.SC.entityDB, {
       select: select,
-      skip: paginateParsed?.skip,
-      take: paginateParsed?.take,
+      skip: paginateParsed?.skip as number,
+      take: paginateParsed?.take as number,
       where: {
         ...this.preFilterBuilded,
         ...buildWhereArray(filterParsed),
@@ -141,7 +98,7 @@ export class Crudator<
       throw new NotFoundException("Entity doesn't exist");
     }
 
-    const res = await this.EM.save(this.SC.entityDB, {
+    await this.EM.save(this.SC.entityDB, {
       ...data,
       id,
     } as QueryDeepPartialEntity<T>);

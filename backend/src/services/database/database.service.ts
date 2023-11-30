@@ -16,7 +16,7 @@ export const dataSource = new DataSource({
   database: process.env.POSTGRES_DATABASE,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*{.ts,.js}'],
-});
+} as any);
 
 @Injectable()
 export class DatabaseService implements TypeOrmOptionsFactory {
