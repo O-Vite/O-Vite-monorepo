@@ -1,5 +1,5 @@
-import { RequiredDeep } from 'type-fest';
-import typia, { tags, misc } from 'typia';
+import typia from 'typia';
+import { UnionToArray } from './testBis';
 
 // -> lib //
 type DTO<Token extends PropertyKey> = {
@@ -34,26 +34,17 @@ type FullResultGlobal<Entity extends object, T extends DtoPerRole<any>> = {
   };
 };
 
-type FullResultGlobalWithArray<
-  Entity extends object,
-  T extends DtoPerRole<any>,
+type GeneralConfigWithArrayValue<
+  T extends FullResultGlobal<any, DtoPerRole<any>>,
 > = {
-  insert: keyof {
-    [K in keyof Entity as Entity[K] extends T['NO_INSERT']
-      ? never
-      : K]: Entity[K];
-  }[];
-  update: keyof {
-    [K in keyof Entity as Entity[K] extends T['NO_UPDATE']
-      ? never
-      : K]: Entity[K];
-  }[];
-  select: keyof {
-    [K in keyof Entity as Entity[K] extends T['NO_SELECT']
-      ? never
-      : K]: Entity[K];
-  }[];
+  insert: [T['insert']];
+  update: [T['update']];
+  select: [T['select']];
 };
+
+const fn = <T extends FullResultGlobal<any, DtoPerRole<any>>>(
+  item: GeneralConfigWithArrayValue<T>,
+) => item;
 
 // <- lib //
 
@@ -66,29 +57,12 @@ interface User {
 type Admin = DtoPerRole<'ADMIN'>;
 type Client = DtoPerRole<'CLIENT'>;
 
-type ObjectInsertUpdateSelectUnion<
-  T extends FullResultGlobal<object, DtoPerRole<any>>,
-> = {
-  insert: (keyof T['insert'])[];
-  update: (keyof T['update'])[];
-  select: (keyof T['select'])[];
-};
+type AdminConfig = AdminGeneratorConfig<User>;
 
-type AdminConfigWithArrayValue = {
-  insert: AdminConfig['insert'][];
-  update: AdminConfig['update'][];
-  select: AdminConfig['select'][];
-};
+type AdminGeneratorConfig<T extends object> = FullResultGlobal<T, Admin>;
 
-const fn = (item: AdminConfigWithArrayValue) => item;
-
-type AdminConfig = FullResultGlobal<User, Admin>;
-const rrr = typia.misc.literals<AdminConfig['insert']>();
-
-fn({
+fn<AdminConfig>({
   insert: typia.misc.literals<AdminConfig['insert']>(),
   update: typia.misc.literals<AdminConfig['update']>(),
   select: typia.misc.literals<AdminConfig['select']>(),
 });
-
-//typia.misc.literals<keyof FullResultAdmin['insert']>();
