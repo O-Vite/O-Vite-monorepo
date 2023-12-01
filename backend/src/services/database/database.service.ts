@@ -5,6 +5,7 @@ import {
 } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import 'dotenv/config';
+import { useRobustoCrud } from 'packages/robusto-crud/service';
 
 console.log(process.env.POSTGRES_USERNAME);
 export const dataSource = new DataSource({
@@ -17,6 +18,8 @@ export const dataSource = new DataSource({
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*{.ts,.js}'],
 } as any);
+
+export const robustoCrud = useRobustoCrud(dataSource.manager);
 
 @Injectable()
 export class DatabaseService implements TypeOrmOptionsFactory {

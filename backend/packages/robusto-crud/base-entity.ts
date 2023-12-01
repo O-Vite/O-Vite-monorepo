@@ -1,9 +1,11 @@
+import { Except } from 'type-fest';
 import {
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { tags } from 'typia';
+import { TOmit } from 'utils/types';
 
 const TransformDate = {
   from(value: Date) {
@@ -33,7 +35,7 @@ export class BaseEntityDb {
   public updatedAt!: string & tags.Format<'date-time'>;
 }
 
-export type TOmitBaseEntity<T, U extends keyof T = never> = Omit<
-  T,
-  keyof BaseEntityDb | U
->;
+export type TOmitBaseEntity<
+  T extends BaseEntityDb,
+  K extends keyof Except<T, keyof BaseEntityDb> = never,
+> = Except<Except<T, keyof BaseEntityDb>, K>;

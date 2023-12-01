@@ -1,45 +1,24 @@
-// import {
-//   Controller,
-//   Get,
-//   Post,
-//   Body,
-//   Patch,
-//   Param,
-//   Delete,
-// } from '@nestjs/common';
-// import { UsersService } from './users.service';
-// import {
-//   CreateUserDto,
-//   UpdateUserDto,
-//   UserDto,
-// } from 'src/services/database/entities/user.entity';
+import { robustoCrud } from './../../services/database/database.service';
+import { Controller } from '@nestjs/common';
+import { TOmitBaseEntity } from 'packages/robusto-crud/base-entity';
 
-// @Controller('users')
-// export class UsersController {
-//   constructor(private readonly usersService: UsersService) {}
+import { UserDb } from 'src/services/database/entities/user.entity';
+import typia from 'typia';
+import { TOmit } from 'utils/types';
+import { Except } from 'type-fest';
 
-//   @Post()
-//   async create(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
-//     return new UserDto(await this.usersService.create(createUserDto));
-//   }
+type UserDto = TOmitBaseEntity<UserDb, 'password'>;
+type UserCreateDto = TOmitBaseEntity<UserDb>;
+type UserUpdateDto = Partial<UserCreateDto>;
 
-//   @Get()
-//   findAll() {
-//     return this.usersService.findAll();
-//   }
-
-//   @Get(':id')
-//   findOne(@Param('id') id: string) {
-//     return this.usersService.findOne(id);
-//   }
-
-//   @Patch(':id')
-//   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-//     return this.usersService.update(id, updateUserDto);
-//   }
-
-//   @Delete(':id')
-//   remove(@Param('id') id: string) {
-//     return this.usersService.remove(+id);
-//   }
-// }
+@Controller('users')
+export class UsersController {
+  private readonly crudator = robustoCrud({
+    entityDB: UserDb,
+    selectKeys: typia.misc.literals<keyof UserDto>(),
+    selectDto: {} as UserDto,
+    insertDto: {} as UserCreateDto,
+    updateDto: {} as UserUpdateDto,
+    wherePrefilter: [],
+  });
+}
