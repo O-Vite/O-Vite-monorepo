@@ -20,23 +20,19 @@ export type TId = string & tags.Format<'uuid'>;
 
 export class BaseEntityDb {
   @PrimaryGeneratedColumn('uuid')
-  id!: TId & DEFAULT['NO_INSERT_NO_UPDATE'];
+  id!: TId & tags.Format<'uuid'>;
 
   @CreateDateColumn({
     type: 'timestamp with time zone',
     transformer: TransformDate,
   })
-  public createdAt!: string &
-    tags.Format<'date-time'> &
-    DEFAULT['NO_INSERT_NO_UPDATE'];
+  public createdAt!: string & tags.Format<'date-time'>;
 
   @UpdateDateColumn({
     type: 'timestamp with time zone',
     transformer: TransformDate,
   })
-  public updatedAt!: string &
-    tags.Format<'date-time'> &
-    DEFAULT['NO_INSERT_NO_UPDATE'];
+  public updatedAt!: string & tags.Format<'date-time'>;
 }
 
 type DEFAULT = TDtoPerRole<'DEFAULT'>;

@@ -11,21 +11,15 @@ export type RegisterDto = Pick<UserDb, 'email' | 'password'>;
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-  @TypedRoute.Get('test')
-  test() {
-    return 'test';
+  @Public()
+  @TypedRoute.Post('login')
+  login(@TypedBody() loginObj: LoginDto) {
+    return this.authService.signIn(loginObj);
   }
-
-  // constructor(private authService: AuthService) {}
-  // @Public()
-  // @TypedRoute.Post('login')
-  // login(@TypedBody() loginObj: LoginDto) {
-  //   return this.authService.signIn(loginObj);
-  // }
-  // @HttpCode(HttpStatus.CREATED)
-  // @Public()
-  // @TypedRoute.Post('register')
-  // register(@TypedBody() registerObj: RegisterDto): Promise<TSignUpResponse> {
-  //   return this.authService.register(registerObj);
-  // }
+  @HttpCode(HttpStatus.CREATED)
+  @Public()
+  @TypedRoute.Post('register')
+  register(@TypedBody() registerObj: RegisterDto): Promise<TSignUpResponse> {
+    return this.authService.register(registerObj);
+  }
 }

@@ -36,7 +36,7 @@ type TSettingCrud<
 
 export const useRobustoCrud =
   (entityManager: EntityManager) =>
-  <T extends Class<BaseEntityDb>, Role extends TDtoPerRole<any>>(
+  <T extends BaseEntityDb, Role extends TDtoPerRole<any>>(
     settings: TSettingCrudBis<T, Role> & {
       wherePrefilter: TObjectValueOperatorWhere<T>[];
     },
@@ -47,12 +47,12 @@ export const useRobustoCrud =
         select: typeof settings.selectKeys = settings.selectKeys,
         filter?: TObjectValueOperatorWhere<T>[],
         paginate?: TPagination,
-      ): Promise<(typeof settings.selectDto)[]> {
+      ) {
         const filterParsed = filter ?? [];
 
         filter ? assertListWhere(filter) : null;
 
-        return entityManager.find(settings.entityDB, {
+        const res = entityManager.find(settings.entityDB, {
           select: select,
           skip: paginate?.skip as number,
           take: paginate?.take as number,

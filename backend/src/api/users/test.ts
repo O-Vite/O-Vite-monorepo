@@ -60,8 +60,8 @@ type AdminConfig = AdminGeneratorConfig<User>;
 
 type AdminGeneratorConfig<T extends object> = FullResultGlobal<T, Admin>;
 
-fn<AdminConfig>({
-  insert: literals<AdminConfig['insert']>(),
-  update: literals<AdminConfig['update']>(),
-  select: literals<AdminConfig['select']>(),
-});
+// fn<AdminConfig>({
+//   insert: literals<AdminConfig['insert']>(),
+//   update: literals<AdminConfig['update']>(),
+//   select: literals<AdminConfig['select']>(),
+// });

@@ -3,7 +3,7 @@ import {
   type TypeOrmModuleOptions,
   type TypeOrmOptionsFactory,
 } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, Entity } from 'typeorm';
 import 'dotenv/config';
 import { useRobustoCrud } from 'packages/robusto-crud/service';
 
@@ -15,9 +15,13 @@ export const dataSource = new DataSource({
   username: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DATABASE,
+  synchronize: process.env.NODE_ENV !== 'production',
+  autoLoadEntities: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*{.ts,.js}'],
 } as any);
+
+export const Orm = dataSource.manager;
 
 export const robustoCrud = useRobustoCrud(dataSource.manager);
 

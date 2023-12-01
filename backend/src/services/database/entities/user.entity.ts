@@ -12,7 +12,7 @@ import { literals } from 'typia/lib/misc';
 
 type ALL = TDtoPerRole<'ALL'>;
 
-@Entity('user')
+@Entity('users')
 export class UserDb extends BaseEntityDb {
   @Column({
     type: 'varchar',
@@ -21,9 +21,9 @@ export class UserDb extends BaseEntityDb {
   email!: string & tags.Format<'email'>;
   @Column({
     type: 'varchar',
-    nullable: true,
+    nullable: false,
   })
-  password!: string & ALL['NO_SELECT'];
+  password!: string;
 }
 
 type AllExtract = TExtractDto<UserDb, ALL>;
@@ -45,20 +45,25 @@ const generateInputForRobustoCrud = <
   },
 ) => settings;
 
+type SelectDto = Res['selectDto'];
+type InsertDto = Res['insertDto'];
+type UpdateDto = Res['updateDto'];
+
+// to change for generic and real values
 const settingsUserCrud = generateInputForRobustoCrud(UserDb, {
   entityDB: UserDb,
-  selectKeys: literals<keyof Res['selectDto']>(),
-  selectDto: {} as Res['selectDto'],
-  insertDto: {} as Res['insertDto'],
-  updateDto: {} as Res['updateDto'],
+  selectKeys: ['email', 'id', 'createdAt', 'updatedAt'],
+  selectDto: {} as SelectDto,
+  insertDto: {} as InsertDto,
+  updateDto: {} as UpdateDto,
   wherePrefilter: [],
 });
 
-const fn = <T extends Class<BaseEntityDb>>(db: T) => {
-  return db;
-};
+// const fn = <T extends Class<BaseEntityDb>>(db: T) => {
+//   return db;
+// };
 
-fn(UserDb);
+// fn(UserDb);
 
 // entityDB: UserDb as Class<UserDb> & Class<BaseEntityDb>,
 // insertDto: {} as AllExtract['insert'],
