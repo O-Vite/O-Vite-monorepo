@@ -24,6 +24,7 @@ module.exports = {
     "@typescript-eslint/quotes": 0,
     "array-callback-return": "error",
     "no-constructor-return": "error",
+    "no-unused-vars": "warn",
     "no-duplicate-imports": "off",
     "no-new-native-nonconstructor": "error",
     "@typescript-eslint/no-use-before-define": "off",

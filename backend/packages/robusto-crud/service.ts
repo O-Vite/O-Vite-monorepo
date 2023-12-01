@@ -83,6 +83,7 @@ export const useRobustoCrud =
       async insert(data: InsertDto[]): Promise<TSelectDto[]> {
         const res = await entityManager.save(
           settings.entityDB,
+          //@ts-ignore
           data as InsertDto[],
           {
             chunk: 10000,

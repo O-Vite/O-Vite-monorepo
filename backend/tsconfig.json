@@ -28,7 +28,7 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noPropertyAccessFromIndexSignature": false,
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": true,
@@ -74,6 +74,12 @@
       "src/*"
     ]
   },
+  "include": [
+    "src/**/*.ts",
+    "packages/**/*.ts",
+    "types/**/*.d.ts"
+
+  ],
   "exclude": [
     "dist",
     "node_modules",

@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './services/database/database.module';
 import { UsersModule } from './api/users/users.module';
+import { AuthModule } from './api/auth/auth.module';
 
 // import { APP_GUARD } from '@nestjs/core';
 // import { RolesGuard } from './services/guard/role/role.guard';
@@ -12,6 +13,7 @@ import { UsersModule } from './api/users/users.module';
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
     UsersModule,
+    AuthModule,
   ],
   controllers: [],
   // providers: [

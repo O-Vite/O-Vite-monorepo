@@ -5,7 +5,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { tags } from 'typia';
-import { TOmit } from 'utils/types';
 
 const TransformDate = {
   from(value: Date) {
