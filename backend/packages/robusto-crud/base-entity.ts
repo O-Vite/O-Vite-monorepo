@@ -1,3 +1,4 @@
+import { TDtoPerRole } from 'packages/robusto-dto';
 import { Except } from 'type-fest';
 import {
   CreateDateColumn,
@@ -19,20 +20,26 @@ export type TId = string & tags.Format<'uuid'>;
 
 export class BaseEntityDb {
   @PrimaryGeneratedColumn('uuid')
-  id!: TId;
+  id!: TId & DEFAULT['NO_INSERT_NO_UPDATE'];
 
   @CreateDateColumn({
     type: 'timestamp with time zone',
     transformer: TransformDate,
   })
-  public createdAt!: string & tags.Format<'date-time'>;
+  public createdAt!: string &
+    tags.Format<'date-time'> &
+    DEFAULT['NO_INSERT_NO_UPDATE'];
 
   @UpdateDateColumn({
     type: 'timestamp with time zone',
     transformer: TransformDate,
   })
-  public updatedAt!: string & tags.Format<'date-time'>;
+  public updatedAt!: string &
+    tags.Format<'date-time'> &
+    DEFAULT['NO_INSERT_NO_UPDATE'];
 }
+
+type DEFAULT = TDtoPerRole<'DEFAULT'>;
 
 export type TOmitBaseEntity<
   T extends BaseEntityDb,
