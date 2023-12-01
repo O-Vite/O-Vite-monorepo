@@ -10,12 +10,78 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "incremental": false,
+    "noImplicitOverride": true,
     "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noImplicitThis": true,
+    "strictFunctionTypes": true,
+    "alwaysStrict": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "strictNullChecks": true,
+    "allowJs": false,
+    "forceConsistentCasingInFileNames": true,
+
+    "plugins": [
+      {
+        "transform": "@nestia/core/lib/transform",
+        "functional": true,
+        /**
+         * Validate request body.
+         * 
+         *   - "assert": Use typia.assert() function
+         *   - "is": Use typia.is() function
+         *   - "validate": Use typia.validate() function
+         *   - "assertEquals": Use typia.assertEquals() function
+         *   - "equals": Use typia.equals() function
+         *   - "validateEquals": Use typia.validateEquals() function
+         */
+        "validate": "assert",
+        /**
+         * Validate JSON typed response body.
+         * 
+         *   - "assert": Use typia.assertStringify() function
+         *   - "is": Use typia.isStringify() function
+         *   - "validate": Use typia.validateStringify() function
+         *   - "stringify": Use typia.stringify() function, but dangerous
+         *   - null: Just use JSON.stringify() function, without boosting
+         */
+        "stringify": "assert"
+      },
+      {
+        "transform": "typia/lib/transform",
+        "functional": true
+      }
+    ]
+  },
+  "paths": {
+    "~/*": [
+      "src/*"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "packages/**/*.ts",
+    "types/**/*.d.ts"
+
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+  ]
 }
