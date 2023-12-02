@@ -5,7 +5,7 @@ import { literals } from 'typia/lib/misc';
 import { UnionToArray } from '../../src/api/users/testBis';
 
 // -> lib //
-type TDto<Token extends PropertyKey> = {
+export type TDto<Token extends PropertyKey> = {
   readonly aa: { [K in Token]: void };
 };
 

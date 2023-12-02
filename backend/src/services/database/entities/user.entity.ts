@@ -2,12 +2,13 @@ import { Column, Entity } from 'typeorm';
 import { BaseEntityDb } from '../../../../packages/robusto-crud/base-entity';
 import { tags } from 'typia';
 import {
+  TDto,
   TDtoPerRole,
   TExtractDto,
   TSettingCrudBis,
 } from 'packages/robusto-dto';
 import { TObjectValueOperatorWhere } from 'packages/robusto-crud/filter-query';
-import { Class } from 'type-fest';
+import { Class, Opaque, UnwrapOpaque } from 'type-fest';
 import { literals } from 'typia/lib/misc';
 
 type ALL = TDtoPerRole<'ALL'>;
@@ -23,8 +24,20 @@ export class UserDb extends BaseEntityDb {
     type: 'varchar',
     nullable: false,
   })
-  password!: string;
+  password!: Opaque<string, ALL['NO_SELECT']>;
 }
+
+type UnWrapAllkeysUserDb = {
+  [K in keyof UserDb]: UserDb[K] extends Opaque<unknown, any>
+    ? UnwrapOpaque<UserDb[K]>
+    : UserDb[K];
+};
+
+type UnwrapAnyToken<T> = {
+  [K in keyof T]: T[K] extends Opaque<unknown, any> ? UnwrapOpaque<T[K]> : T[K];
+};
+
+type Resfef = UnwrapAnyToken<UserDb>;
 
 type AllExtract = TExtractDto<UserDb, ALL>;
 
@@ -58,6 +71,8 @@ const settingsUserCrud = generateInputForRobustoCrud(UserDb, {
   updateDto: {} as UpdateDto,
   wherePrefilter: [],
 });
+
+type mm = typeof settingsUserCrud.selectDto;
 
 // const fn = <T extends Class<BaseEntityDb>>(db: T) => {
 //   return db;
