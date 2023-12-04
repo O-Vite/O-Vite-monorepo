@@ -18,9 +18,9 @@ const TransformDate = {
 
 export type TId = string & tags.Format<'uuid'>;
 
-export class BaseEntityDb {
+export class BaseEntityRobusto {
   @PrimaryGeneratedColumn('uuid')
-  id!: TId & tags.Format<'uuid'>;
+  id!: TId;
 
   @CreateDateColumn({
     type: 'timestamp with time zone',
@@ -35,9 +35,9 @@ export class BaseEntityDb {
   public updatedAt!: string & tags.Format<'date-time'>;
 }
 
-type DEFAULT = TDtoPerRole<'DEFAULT'>;
+// type DEFAULT = TDtoPerRole<'DEFAULT'>;
 
 export type TOmitBaseEntity<
-  T extends BaseEntityDb,
-  K extends keyof Except<T, keyof BaseEntityDb> = never,
-> = Except<Except<T, keyof BaseEntityDb>, K>;
+  T extends BaseEntityRobusto,
+  K extends keyof Except<T, keyof BaseEntityRobusto> = never,
+> = Except<Except<T, keyof BaseEntityRobusto>, K>;

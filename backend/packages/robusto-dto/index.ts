@@ -1,4 +1,4 @@
-import { BaseEntityDb } from 'packages/robusto-crud/base-entity';
+import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
 import { Class } from 'type-fest';
 import { ObjectType } from 'typeorm';
 import { literals } from 'typia/lib/misc';
@@ -45,7 +45,7 @@ export type TExtractDto<Entity extends object, T extends TDtoPerRole<any>> = {
 };
 
 export type TSettingCrudBis<
-  Entity extends BaseEntityDb,
+  Entity extends BaseEntityRobusto,
   Role extends TDtoPerRole<any>,
   T extends TExtractDto<Entity, Role> = TExtractDto<Entity, Role>,
 > = {

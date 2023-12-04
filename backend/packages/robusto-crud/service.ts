@@ -1,5 +1,5 @@
 import { TExtractDto } from './../robusto-dto/index';
-import { BaseEntityDb } from './base-entity';
+import { BaseEntityRobusto } from './base-entity';
 import {
   DeepPartial,
   EntityManager,
@@ -21,7 +21,7 @@ import { TDtoPerRole, TSettingCrudBis } from 'packages/robusto-dto';
 import { Class } from 'type-fest';
 
 type TSettingCrud<
-  TEntity extends BaseEntityDb,
+  TEntity extends BaseEntityRobusto,
   TInsertDto extends Partial<TEntity>,
   UpdateDto extends DeepPartial<TEntity>,
   TSelectDto extends DeepPartial<TEntity>,
@@ -36,7 +36,7 @@ type TSettingCrud<
 
 export const useRobustoCrud =
   (entityManager: EntityManager) =>
-  <T extends BaseEntityDb, Role extends TDtoPerRole<any>>(
+  <T extends BaseEntityRobusto, Role extends TDtoPerRole<any>>(
     settings: TSettingCrudBis<T, Role> & {
       wherePrefilter: TObjectValueOperatorWhere<T>[];
     },

@@ -1,86 +1,51 @@
-import { Column, Entity } from 'typeorm';
-import { BaseEntityDb } from '../../../../packages/robusto-crud/base-entity';
-import { tags } from 'typia';
-import {
-  TDto,
-  TDtoPerRole,
-  TExtractDto,
-  TSettingCrudBis,
-} from 'packages/robusto-dto';
-import { TObjectValueOperatorWhere } from 'packages/robusto-crud/filter-query';
-import { Class, Opaque, UnwrapOpaque } from 'type-fest';
-import { literals } from 'typia/lib/misc';
+import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { ComplainEntity } from './complain.entity';
+import { MessageEntity } from './message.entity';
 
-type ALL = TDtoPerRole<'ALL'>;
-
-@Entity('users')
-export class UserDb extends BaseEntityDb {
-  @Column({
-    type: 'varchar',
-    nullable: false,
-  })
-  email!: string & tags.Format<'email'>;
-  @Column({
-    type: 'varchar',
-    nullable: false,
-  })
-  password!: Opaque<string, ALL['NO_SELECT']>;
+enum UserRole {
+  ADMIN = 'admin',
+  CLIENT = 'client',
+  DELIVERER = 'deliverer',
+  SUPPORT = 'support',
+  SELLER = 'seller',
 }
 
-type UnWrapAllkeysUserDb = {
-  [K in keyof UserDb]: UserDb[K] extends Opaque<unknown, any>
-    ? UnwrapOpaque<UserDb[K]>
-    : UserDb[K];
-};
+@Entity('user')
+export class UserEntity extends BaseEntityRobusto {
+  @Column('text')
+  email!: string;
 
-type UnwrapAnyToken<T> = {
-  [K in keyof T]: T[K] extends Opaque<unknown, any> ? UnwrapOpaque<T[K]> : T[K];
-};
+  @Column('varchar', {
+    length: 60,
+    select: false,
+  })
+  password!: string;
 
-type Resfef = UnwrapAnyToken<UserDb>;
+  @Column('text')
+  phoneNumber!: string;
 
-type AllExtract = TExtractDto<UserDb, ALL>;
+  @Column('text')
+  name!: string;
 
-type Res = TSettingCrudBis<UserDb, ALL>;
+  @Column('text')
+  firstName!: string;
 
-// <T extends BaseEntityDb, Role extends TDtoPerRole<any>>(
-//   settings: TSettingCrudBis<T, Role> & {
-//     wherePrefilter: TObjectValueOperatorWhere<T>[];
-//   },
-// )
-const generateInputForRobustoCrud = <
-  T extends BaseEntityDb,
-  Role extends TDtoPerRole<any>,
->(
-  entity: Class<T>,
-  settings: TSettingCrudBis<T, Role> & {
-    wherePrefilter: TObjectValueOperatorWhere<T>[];
-  },
-) => settings;
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+  })
+  role!: UserRole;
 
-type SelectDto = Res['selectDto'];
-type InsertDto = Res['insertDto'];
-type UpdateDto = Res['updateDto'];
+  @Column('boolean')
+  isVerified!: boolean;
 
-// to change for generic and real values
-const settingsUserCrud = generateInputForRobustoCrud(UserDb, {
-  entityDB: UserDb,
-  selectKeys: ['email', 'id', 'createdAt', 'updatedAt'],
-  selectDto: {} as SelectDto,
-  insertDto: {} as InsertDto,
-  updateDto: {} as UpdateDto,
-  wherePrefilter: [],
-});
+  @OneToMany(
+    () => ComplainEntity,
+    (complain: ComplainEntity) => complain.userComplaining,
+  )
+  complains!: ComplainEntity[];
 
-type mm = typeof settingsUserCrud.selectDto;
-
-// const fn = <T extends Class<BaseEntityDb>>(db: T) => {
-//   return db;
-// };
-
-// fn(UserDb);
-
-// entityDB: UserDb as Class<UserDb> & Class<BaseEntityDb>,
-// insertDto: {} as AllExtract['insert'],
-// updateDto: {} as AllExtract['update'],
-// selectKeys: ['email', 'id', 'createdAt', 'updatedAt'],
+  @OneToMany(() => MessageEntity, (message: MessageEntity) => message.user)
+  messages!: MessageEntity[];
+}
