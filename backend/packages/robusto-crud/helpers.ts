@@ -6,7 +6,7 @@ import {
   In,
   ObjectType,
 } from 'typeorm';
-import { TBaseEntityRobusto } from './base-entity';
+import { TBaseEntityRobusto, TId } from './base-entity';
 import {
   TObjectValueOperatorWhere,
   TPagination,
@@ -16,13 +16,7 @@ import {
 import { assert, createAssert } from 'typia';
 import { Paths } from 'type-fest';
 import { D } from '@mobily/ts-belt';
-
-type makeObjectFromKeys<
-  InitialObject extends object,
-  Keys extends keyof DeepPartial<InitialObject>,
-> = {
-  [K in Keys]: InitialObject[K];
-};
+import { RemoveNever } from 'utils/types';
 
 export namespace RobustoHelper {
   export const fetchAll = async <
@@ -47,6 +41,7 @@ export namespace RobustoHelper {
       ? assert(settings.paginate)
       : undefined;
 
+    //TODO: check for keys and relations because you can set keys without relations
     const res = await entityManager.find(settings.entityDB, {
       select: settings.selectKeys,
       ...(paginateParsed?.skip !== undefined && { skip: paginateParsed.skip }),
@@ -59,6 +54,9 @@ export namespace RobustoHelper {
     return settings.assertSelectDto ? settings.assertSelectDto(res) : res;
   };
 
+  type RemoveKeysWithValueObjectOrArrayObject<T extends object> = RemoveNever<{
+    [K in keyof T]: T[K] extends { id: TId } | { id: TId }[] ? never : T[K];
+  }>;
   export const insert = async <
     Entity extends TBaseEntityRobusto,
     InsertDto extends DeepPartial<Entity>,
@@ -69,30 +67,15 @@ export namespace RobustoHelper {
       entityDB: ObjectType<Entity>;
       uniqueKeys: (keyof InsertDto)[];
       selectKeys: (keyof SelectDto)[];
-      assertInsertDto?: ReturnType<typeof createAssert<InsertDto[]>>;
-      assertSelectDto?: ReturnType<typeof createAssert<SelectDto[]>>;
+      assertSelectDto: ReturnType<typeof createAssert<SelectDto[]>>;
+      assertInsertDto: ReturnType<typeof createAssert<InsertDto[]>>;
+
       preFilterBuilded?: typeof buildWhereArray<Entity>;
     },
     data: InsertDto | InsertDto[],
-  ): Promise<SelectDto[]> => {
+  ): Promise<RemoveKeysWithValueObjectOrArrayObject<SelectDto>[]> => {
     settings.assertInsertDto ? settings.assertInsertDto(data) : null;
     data = Array.isArray(data) ? data : [data];
-    // const isAllKeysUnique = (
-    //   await Promise.all(
-    //     settings.uniqueKeys.map(async (key) => {
-    //       // const ee = { [key]: In(data.map((el) => el[key])) } as any;
-    //       const res = await entityManager.find(settings.entityDB, {
-    //         select: ['id'] as any,
-    //         where: { [key]: In(['matteodel@outloofdfk2.fr'] as any) } as any,
-    //       });
-    //       return res.length === 0;
-    //     }),
-    //   )
-    // ).every((el) => true);
-
-    // if (!isAllKeysUnique) {
-    //   throw new Error('Some keys are not unique');
-    // }
 
     const res = await entityManager.save(settings.entityDB, data, {
       chunk: 1000,
@@ -104,8 +87,8 @@ export namespace RobustoHelper {
       //@ts-expect-error
       D.selectKeys(el, settings.selectKeys),
     );
-    //@ts-expect-error
-    return ResWithOnlySelectKeys as SelectDto[];
+
+    return ResWithOnlySelectKeys as RemoveKeysWithValueObjectOrArrayObject<SelectDto>[];
   };
 }
 

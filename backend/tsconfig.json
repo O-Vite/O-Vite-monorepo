@@ -77,7 +77,8 @@
   "include": [
     "src/**/*.ts",
     "packages/**/*.ts",
-    "types/**/*.d.ts"
+    "types/**/*.d.ts",
+    "utils/**/*.ts"
 
   ],
   "exclude": [
