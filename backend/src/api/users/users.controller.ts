@@ -17,8 +17,8 @@ import { Except } from 'type-fest';
 import { RobustoHelper } from 'packages/robusto-crud/helpers';
 import { createAssertStringify } from 'typia/lib/json';
 
-type UserSelectDto = Except<UserEntity, 'complains' | 'messages'>;
-// type UserCreateDto = TOmitBaseEntity<UserEntity>;
+type UserSelectDto = Except<UserEntity, 'complains' | 'messages' | 'password'>;
+type UserCreateDto = Pick<UserEntity, 'email' | 'password'>;
 // type UserUpdateDto = Partial<UserCreateDto>;
 
 @Controller('users')
@@ -32,12 +32,25 @@ export class UsersController {
   //   wherePrefilter: [],
   // });
 
-  @Get()
+  @TypedRoute.Get()
   async getAll(): Promise<UserSelectDto[]> {
     return RobustoHelper.fetchAll(Orm, {
       entityDB: UserEntity,
       selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
     });
+  }
+
+  @TypedRoute.Post()
+  async create(@TypedBody() data: UserCreateDto[]): Promise<UserSelectDto[]> {
+    return RobustoHelper.insert(
+      Orm,
+      {
+        entityDB: UserEntity,
+        selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
+        uniqueKeys: ['email'],
+      },
+      data,
+    );
   }
 }
 

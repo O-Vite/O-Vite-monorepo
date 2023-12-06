@@ -13,7 +13,9 @@ enum UserRole {
 
 @Entity('user')
 export class UserEntity extends BaseEntityRobusto {
-  @Column('text')
+  @Column('text', {
+    unique: true,
+  })
   email!: string;
 
   @Column('varchar', {
@@ -22,22 +24,30 @@ export class UserEntity extends BaseEntityRobusto {
   })
   password!: string;
 
-  @Column('text')
-  phoneNumber!: string;
-
-  @Column('text')
-  name!: string;
-
-  @Column('text')
-  firstName!: string;
-
   @Column({
     type: 'enum',
     enum: UserRole,
   })
   role!: UserRole;
 
-  @Column('boolean')
+  @Column('text', {
+    default: '',
+  })
+  phoneNumber!: string;
+
+  @Column('text', {
+    default: '',
+  })
+  name!: string;
+
+  @Column('text', {
+    default: '',
+  })
+  firstName!: string;
+
+  @Column('boolean', {
+    default: false,
+  })
   isVerified!: boolean;
 
   @OneToMany(
