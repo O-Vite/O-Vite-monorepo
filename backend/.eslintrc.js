@@ -28,6 +28,7 @@ module.exports = {
     "no-duplicate-imports": "off",
     "no-new-native-nonconstructor": "error",
     "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-namespace": "off",
     "no-self-compare": "error",
     "no-template-curly-in-string": "error",
     "no-unused-private-class-members": "error",

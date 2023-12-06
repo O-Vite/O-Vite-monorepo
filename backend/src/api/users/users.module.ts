@@ -1,10 +1,10 @@
-// import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-// import { UsersController } from './users.controller';
-// import { TypeOrmModule } from '@nestjs/typeorm';
-// // import { UserDb } from 'src/services/database/entities/_user.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+// import { UserDb } from 'src/services/database/entities/_user.entity';
+import { UsersController } from './users.controller';
 
-// @Module({
-//   controllers: [UsersController],
-// })
-// export class UsersModule {}
+@Module({
+  controllers: [UsersController],
+})
+export class UsersModule {}

@@ -2,6 +2,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './services/database/database.module';
+import { UsersModule } from './api/users/users.module';
 // import { UsersModule } from './api/users/users.module';
 // import { AuthModule } from './api/auth/auth.module';
 
@@ -12,7 +13,7 @@ import { DatabaseModule } from './services/database/database.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
-    // UsersModule,
+    UsersModule,
     // AuthModule,
   ],
   controllers: [],

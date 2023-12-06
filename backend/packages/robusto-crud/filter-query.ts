@@ -61,10 +61,13 @@ export type TObjectValueOperatorWhere<T> =
       value: TObjectValueOperatorWhere<T>;
     };
 
+export type TUniqueBuildWhereArray = { readonly __tag: unique symbol };
 export const buildWhereArray = <T>(where: TObjectValueOperatorWhere<T>[]) => {
   return where.reduce((arr, el) => {
     return { ...arr, [el.key]: buildWhereFunction(el) };
-  }, {});
+  }, {}) as {
+    [K in keyof T]: FindOperator<any>;
+  } & TUniqueBuildWhereArray;
 };
 
 const buildWhereFunction = <T>(

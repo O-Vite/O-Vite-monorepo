@@ -1,3 +1,4 @@
+import { type } from 'os';
 import { TDtoPerRole } from 'packages/robusto-dto';
 import { Except } from 'type-fest';
 import {
@@ -8,8 +9,8 @@ import {
 import { tags } from 'typia';
 
 const TransformDate = {
-  from(value: Date) {
-    return value.toISOString();
+  from(value: Date | null) {
+    return value?.toISOString();
   },
   to(value: string) {
     return value;
@@ -17,6 +18,10 @@ const TransformDate = {
 };
 
 export type TId = string & tags.Format<'uuid'>;
+
+export type TBaseEntityRobusto = {
+  id: TId;
+};
 
 export class BaseEntityRobusto {
   @PrimaryGeneratedColumn('uuid')

@@ -1,5 +1,5 @@
 import { TExtractDto } from './../robusto-dto/index';
-import { BaseEntityRobusto } from './base-entity';
+import { BaseEntityRobusto, TBaseEntityRobusto } from './base-entity';
 import {
   DeepPartial,
   EntityManager,
@@ -33,6 +33,12 @@ type TSettingCrud<
   updateDto: UpdateDto;
   wherePrefilter: TObjectValueOperatorWhere<TEntity>[];
 };
+
+// type TGenericRobustoCrud<Entity extends TBaseEntityRobusto> = {
+//   entityDB: ObjectType<Entity>;
+// };
+
+// type TParamsRobustoCrud = {};
 
 export const useRobustoCrud =
   (entityManager: EntityManager) =>

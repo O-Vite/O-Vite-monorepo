@@ -2,7 +2,6 @@ import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
 import { Class } from 'type-fest';
 import { ObjectType } from 'typeorm';
 import { literals } from 'typia/lib/misc';
-import { UnionToArray } from '../../src/api/users/testBis';
 
 // -> lib //
 export type TDto<Token extends PropertyKey> = {
@@ -72,7 +71,7 @@ export type TSettingCrudBis<
 // }
 
 // type Admin = TDtoPerRole<'ADMIN'>;
-// type Client = DtoPerRole<'CLIENT'>;
+// type Client = TDtoPerRole<'CLIENT'>;
 
 // type AdminConfig = AdminGeneratorConfig<User>;
 
