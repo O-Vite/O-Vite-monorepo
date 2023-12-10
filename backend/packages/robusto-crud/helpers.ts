@@ -13,7 +13,7 @@ import {
   assertListWhere,
   buildWhereArray,
 } from './filter-query';
-import { assert, createAssert } from 'typia';
+import { assert, createAssert, createAssertEquals } from 'typia';
 import { Paths } from 'type-fest';
 import { D } from '@mobily/ts-belt';
 import { RemoveNever } from 'utils/types';
@@ -29,7 +29,7 @@ export namespace RobustoHelper {
     settings: {
       entityDB: ObjectType<Entity>;
       selectKeys: (keyof SelectDto)[];
-      assertSelectDto?: ReturnType<typeof createAssert<SelectDto[]>>;
+      assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto[]>>;
       preFilterBuilded?: typeof buildWhereArray<Entity>;
       whereFilter?: typeof buildWhereArray<Entity>;
       filter?: TObjectValueOperatorWhere<Entity>[];
@@ -53,7 +53,7 @@ export namespace RobustoHelper {
         ...settings.whereFilter,
       } as FindOptionsWhere<any>,
     });
-    return settings.assertSelectDto ? settings.assertSelectDto(res) : res;
+    return settings.assertSelectDto(res);
   };
 
   export const fetchById = async <
@@ -64,11 +64,11 @@ export namespace RobustoHelper {
     settings: {
       entityDB: ObjectType<Entity>;
       selectKeys: (keyof SelectDto)[];
-      assertSelectDto?: ReturnType<typeof createAssert<SelectDto[]>>;
+      assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto>>;
       preFilterBuilded?: typeof buildWhereArray<Entity>;
     },
     id: Entity['id'],
-  ) => {
+  ): Promise<SelectDto> => {
     const res = await entityManager.find(settings.entityDB, {
       select: settings.selectKeys,
       where: {
@@ -81,7 +81,7 @@ export namespace RobustoHelper {
       throw new NotFoundException("Entity doesn't exist");
     }
 
-    return settings.assertSelectDto ? settings.assertSelectDto(res) : res;
+    return settings.assertSelectDto(res[0]);
   };
 
   type RemoveKeysWithValueObjectOrArrayObject<T extends object> = RemoveNever<{
@@ -97,13 +97,13 @@ export namespace RobustoHelper {
       entityDB: ObjectType<Entity>;
       uniqueKeys: (keyof InsertDto)[];
       selectKeys: (keyof SelectDto)[];
-      assertSelectDto: ReturnType<typeof createAssert<SelectDto>>;
-      assertInsertDto: ReturnType<typeof createAssert<InsertDto>>;
+      assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto>>;
+      assertInsertDto: ReturnType<typeof createAssertEquals<InsertDto>>;
       preFilterBuilded?: typeof buildWhereArray<Entity>;
     },
     data: InsertDto | InsertDto[],
   ): Promise<RemoveKeysWithValueObjectOrArrayObject<SelectDto>> => {
-    settings.assertInsertDto ? settings.assertInsertDto(data) : null;
+    settings.assertInsertDto(data);
     data = Array.isArray(data) ? data : [data];
     let res: Entity[] = [];
     try {
@@ -132,7 +132,10 @@ export namespace RobustoHelper {
     // const resSelected = D.selectKeys(res, settings.selectKeys) as SelectDto[];
     //@ts-expect-error
     const ResWithOnlySelectKeys = D.selectKeys(uniqueRes, settings.selectKeys);
-    return ResWithOnlySelectKeys as RemoveKeysWithValueObjectOrArrayObject<SelectDto>;
+    //@ts-expect-error
+    return settings.assertSelectDto(
+      ResWithOnlySelectKeys as RemoveKeysWithValueObjectOrArrayObject<SelectDto>,
+    );
   };
 
   export const isExists = async <Entity extends TBaseEntityRobusto>(
@@ -158,13 +161,14 @@ export namespace RobustoHelper {
       entityDB: ObjectType<Entity>;
       uniqueKeys: (keyof UpdateDto)[];
       selectKeys: (keyof SelectDto)[];
-      assertSelectDto?: ReturnType<typeof createAssert<SelectDto[]>>;
-      assertUpdateDto?: ReturnType<typeof createAssert<UpdateDto[]>>;
+      assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto>>;
+      assertUpdateDto: ReturnType<typeof createAssertEquals<UpdateDto>>;
       preFilterBuilded?: typeof buildWhereArray<Entity>;
     },
     id: Entity['id'],
     data: UpdateDto,
   ): Promise<RemoveKeysWithValueObjectOrArrayObject<SelectDto>> => {
+    settings.assertUpdateDto(data);
     const isExists = await RobustoHelper.isExists(entityManager, settings, id);
 
     if (!isExists) {
@@ -192,12 +196,11 @@ export namespace RobustoHelper {
       throw e;
     }
 
-    //TODO: see if relations are showed
-
-    // const resSelected = D.selectKeys(res, settings.selectKeys) as SelectDto[];
-    //@ts-expect-error
-    const ResWithOnlySelectKeys = D.selectKeys(res, settings.selectKeys);
-    return ResWithOnlySelectKeys as RemoveKeysWithValueObjectOrArrayObject<SelectDto>;
+    return RobustoHelper.fetchById(
+      entityManager,
+      settings,
+      id,
+    ) as RemoveKeysWithValueObjectOrArrayObject<SelectDto>;
   };
 
   export const deleteItem = async <Entity extends TBaseEntityRobusto>(
@@ -206,7 +209,7 @@ export namespace RobustoHelper {
       entityDB: ObjectType<Entity>;
     },
     id: Entity['id'],
-  ) => {
+  ): Promise<void> => {
     await entityManager.delete(settings.entityDB, id);
   };
 }
