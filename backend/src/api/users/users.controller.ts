@@ -12,7 +12,7 @@ type UserSelectDto = Except<
   'complains' | 'password' | 'role' | 'messages'
 >;
 type UserCreateDto = Pick<UserEntity, 'email' | 'password' | 'role'>;
-type UserUpdateDto = Partial<UserCreateDto>;
+type UserUpdateDto = Partial<UserCreateDto> & { id: TId };
 
 type RemoveKeysWithValueObjectOrArrayObject<T extends object> = {
   [K in keyof T]: T[K] extends { id: TId } | { id: TId }[] ? never : T[K];
@@ -54,7 +54,6 @@ export class UsersController {
         selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
         assertSelectDto: createAssertEquals<UserSelectDto>(),
         assertInsertDto: createAssertEquals<UserCreateDto>(),
-        uniqueKeys: ['email'],
       },
       data,
     );
@@ -91,13 +90,11 @@ export class UsersController {
       Orm,
       {
         entityDB: UserEntity,
-        uniqueKeys: ['email'],
         selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
         assertSelectDto: createAssertEquals<UserSelectDto>(),
         assertUpdateDto: createAssertEquals<UserUpdateDto>(),
       },
-      id,
-      data,
+      { ...data },
     );
   }
 }

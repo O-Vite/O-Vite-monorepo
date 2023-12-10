@@ -30,10 +30,9 @@ export namespace RobustoHelper {
       entityDB: ObjectType<Entity>;
       selectKeys: (keyof SelectDto)[];
       assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto[]>>;
-      preFilterBuilded?: typeof buildWhereArray<Entity>;
-      whereFilter?: typeof buildWhereArray<Entity>;
-      filter?: TObjectValueOperatorWhere<Entity>[];
-      paginate?: TPagination;
+      preFilterBuilded?: typeof buildWhereArray<Entity> | undefined;
+      filter?: TObjectValueOperatorWhere<Entity>[] | undefined;
+      paginate?: TPagination | undefined;
     },
   ): Promise<SelectDto[]> => {
     const filterParsed = settings.filter
@@ -50,7 +49,7 @@ export namespace RobustoHelper {
       ...(paginateParsed?.take !== undefined && { take: paginateParsed.take }),
       where: {
         ...settings.preFilterBuilded,
-        ...settings.whereFilter,
+        ...filterParsed,
       } as FindOptionsWhere<any>,
     });
     return settings.assertSelectDto(res);
@@ -65,7 +64,7 @@ export namespace RobustoHelper {
       entityDB: ObjectType<Entity>;
       selectKeys: (keyof SelectDto)[];
       assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto>>;
-      preFilterBuilded?: typeof buildWhereArray<Entity>;
+      preFilterBuilded?: typeof buildWhereArray<Entity> | undefined;
     },
     id: Entity['id'],
   ): Promise<SelectDto> => {
@@ -95,11 +94,10 @@ export namespace RobustoHelper {
     entityManager: EntityManager,
     settings: {
       entityDB: ObjectType<Entity>;
-      uniqueKeys: (keyof InsertDto)[];
       selectKeys: (keyof SelectDto)[];
       assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto>>;
       assertInsertDto: ReturnType<typeof createAssertEquals<InsertDto>>;
-      preFilterBuilded?: typeof buildWhereArray<Entity>;
+      preFilterBuilded?: typeof buildWhereArray<Entity> | undefined;
     },
     data: InsertDto | InsertDto[],
   ): Promise<RemoveKeysWithValueObjectOrArrayObject<SelectDto>> => {
@@ -114,8 +112,7 @@ export namespace RobustoHelper {
           e.message.startsWith('duplicate key value violates unique constraint')
         ) {
           throw new ConflictException(
-            `Unique constraint failed for keys: ${settings.uniqueKeys.join(
-              ', ',
+            `Unique constraint failed for keys
             )}`,
           );
         }
@@ -142,7 +139,7 @@ export namespace RobustoHelper {
     entityManager: EntityManager,
     settings: {
       entityDB: ObjectType<Entity>;
-      preFilterBuilded?: typeof buildWhereArray<Entity>;
+      preFilterBuilded?: typeof buildWhereArray<Entity> | undefined;
     },
     id: Entity['id'],
   ): Promise<boolean> => {
@@ -159,17 +156,19 @@ export namespace RobustoHelper {
     entityManager: EntityManager,
     settings: {
       entityDB: ObjectType<Entity>;
-      uniqueKeys: (keyof UpdateDto)[];
       selectKeys: (keyof SelectDto)[];
       assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto>>;
       assertUpdateDto: ReturnType<typeof createAssertEquals<UpdateDto>>;
-      preFilterBuilded?: typeof buildWhereArray<Entity>;
+      preFilterBuilded?: typeof buildWhereArray<Entity> | undefined;
     },
-    id: Entity['id'],
-    data: UpdateDto,
+    data: UpdateDto & { id: Entity['id'] },
   ): Promise<RemoveKeysWithValueObjectOrArrayObject<SelectDto>> => {
     settings.assertUpdateDto(data);
-    const isExists = await RobustoHelper.isExists(entityManager, settings, id);
+    const isExists = await RobustoHelper.isExists(
+      entityManager,
+      settings,
+      data.id,
+    );
 
     if (!isExists) {
       throw new NotFoundException("Entity doesn't exist");
@@ -179,18 +178,13 @@ export namespace RobustoHelper {
     try {
       res = await entityManager.save(settings.entityDB, {
         ...data,
-        id,
       } as QueryDeepPartialEntity<Entity>);
     } catch (e: any) {
       if (e instanceof QueryFailedError) {
         if (
           e.message.startsWith('duplicate key value violates unique constraint')
         ) {
-          throw new ConflictException(
-            `Unique constraint failed for keys: ${settings.uniqueKeys.join(
-              ', ',
-            )}`,
-          );
+          throw new ConflictException('Unique constraint failed for keys');
         }
       }
       throw e;
@@ -199,7 +193,7 @@ export namespace RobustoHelper {
     return RobustoHelper.fetchById(
       entityManager,
       settings,
-      id,
+      data.id,
     ) as RemoveKeysWithValueObjectOrArrayObject<SelectDto>;
   };
 
@@ -253,4 +247,4 @@ export namespace RobustoHelper {
 //     const res2 = res.map((el) => D.selectKeys(el, settings.selectKeys));
 //     //@ts-ignore
 //     return res2;
-//   },
+//   }
