@@ -24,6 +24,22 @@ export class UserDb extends BaseEntityDb {
     nullable: false,
   })
   password!: string;
+  @Column({
+    type: 'varchar',
+    nullable: false,
+  })
+  firstName!: string;
+  @Column({
+    type: 'varchar',
+    nullable: false,
+  })
+  lastName!: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: false,
+  })
+  role: string = 'ADMINISTRATEUR SUPPORT';
 }
 
 type AllExtract = TExtractDto<UserDb, ALL>;
@@ -52,7 +68,15 @@ type UpdateDto = Res['updateDto'];
 // to change for generic and real values
 const settingsUserCrud = generateInputForRobustoCrud(UserDb, {
   entityDB: UserDb,
-  selectKeys: ['email', 'id', 'createdAt', 'updatedAt'],
+  selectKeys: [
+    'id',
+    'createdAt',
+    'updatedAt',
+    'email',
+    'firstName',
+    'lastName',
+    'role',
+  ], // ajout des nouveaux champs
   selectDto: {} as SelectDto,
   insertDto: {} as InsertDto,
   updateDto: {} as UpdateDto,

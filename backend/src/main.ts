@@ -9,9 +9,14 @@ import { CustomExceptionFilter } from './exceptions/custom-global-exception';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    new FastifyAdapter({
+      logger: true,
+      trustProxy: true,
+    }),
   );
+  app.enableCors();
+
   app.useGlobalFilters(new CustomExceptionFilter());
-  await app.listen(process.env.PORT_BACKEND || 3000, '0.0.0.0');
+  await app.listen(process.env.PORT_BACKEND || 8000, '0.0.0.0');
 }
 bootstrap();

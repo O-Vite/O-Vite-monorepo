@@ -6,7 +6,10 @@ import { UserDb } from 'src/services/database/entities/user.entity';
 import { AuthService, TSignUpResponse } from './auth.service';
 
 export type LoginDto = Pick<UserDb, 'email' | 'password'>;
-export type RegisterDto = Pick<UserDb, 'email' | 'password'>;
+export type RegisterDto = Pick<
+  UserDb,
+  'email' | 'password' | 'firstName' | 'lastName' | 'role'
+>;
 
 @Controller('auth')
 export class AuthController {

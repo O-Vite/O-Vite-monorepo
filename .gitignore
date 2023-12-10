@@ -6,6 +6,7 @@ node_modules/
 build/
 dist/
 pnpm-lock.yaml   # Ignorer le fichier de verrouillage pnpm
+database/
 
 # Fichiers de configuration spécifiques à certaines plateformes (à ajuster si nécessaire)
 .env.local

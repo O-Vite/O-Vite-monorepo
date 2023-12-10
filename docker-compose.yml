@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_DB: $POSTGRES_DB
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+    networks:
+      - mynetwork
+
+  nestjs:
+    image: node:19.0.0-alpine
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    container_name: nestjs
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: $POSTGRES_PORT
+      POSTGRES_USERNAME: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DATABASE: $POSTGRES_DB
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    command: /bin/sh -c "sleep 10 && apk add --no-cache python3 make g++ && npm install && npm run start:dev"
+    networks:
+      - mynetwork
+
+  react:
+    image: node:19.0.0-alpine
+    working_dir: /app
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./front:/app
+    container_name: react
+    ports: 
+      - 3000:3000
+    depends_on:
+      - nestjs
+    environment:
+      REACT_APP_BACKEND_URL: "http://nestjs:8000"
+    networks:
+      - mynetwork
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
