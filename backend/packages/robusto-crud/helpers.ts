@@ -1,10 +1,10 @@
 import {
   DeepPartial,
   EntityManager,
-  FindOptionsSelect,
+  FindManyOptions,
   FindOptionsWhere,
-  In,
   ObjectType,
+  QueryFailedError,
 } from 'typeorm';
 import { TBaseEntityRobusto, TId } from './base-entity';
 import {
@@ -17,6 +17,8 @@ import { assert, createAssert } from 'typia';
 import { Paths } from 'type-fest';
 import { D } from '@mobily/ts-belt';
 import { RemoveNever } from 'utils/types';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 export namespace RobustoHelper {
   export const fetchAll = async <
@@ -29,7 +31,7 @@ export namespace RobustoHelper {
       selectKeys: (keyof SelectDto)[];
       assertSelectDto?: ReturnType<typeof createAssert<SelectDto[]>>;
       preFilterBuilded?: typeof buildWhereArray<Entity>;
-      wherePrefilter?: typeof buildWhereArray<Entity>;
+      whereFilter?: typeof buildWhereArray<Entity>;
       filter?: TObjectValueOperatorWhere<Entity>[];
       paginate?: TPagination;
     },
@@ -48,9 +50,37 @@ export namespace RobustoHelper {
       ...(paginateParsed?.take !== undefined && { take: paginateParsed.take }),
       where: {
         ...settings.preFilterBuilded,
-        ...settings.wherePrefilter,
+        ...settings.whereFilter,
       } as FindOptionsWhere<any>,
     });
+    return settings.assertSelectDto ? settings.assertSelectDto(res) : res;
+  };
+
+  export const fetchById = async <
+    Entity extends TBaseEntityRobusto,
+    SelectDto extends DeepPartial<Entity>,
+  >(
+    entityManager: EntityManager,
+    settings: {
+      entityDB: ObjectType<Entity>;
+      selectKeys: (keyof SelectDto)[];
+      assertSelectDto?: ReturnType<typeof createAssert<SelectDto[]>>;
+      preFilterBuilded?: typeof buildWhereArray<Entity>;
+    },
+    id: Entity['id'],
+  ) => {
+    const res = await entityManager.find(settings.entityDB, {
+      select: settings.selectKeys,
+      where: {
+        id,
+        ...settings.preFilterBuilded,
+      } as FindOptionsWhere<any>,
+    });
+
+    if (res.length === 0) {
+      throw new NotFoundException("Entity doesn't exist");
+    }
+
     return settings.assertSelectDto ? settings.assertSelectDto(res) : res;
   };
 
@@ -67,28 +97,117 @@ export namespace RobustoHelper {
       entityDB: ObjectType<Entity>;
       uniqueKeys: (keyof InsertDto)[];
       selectKeys: (keyof SelectDto)[];
-      assertSelectDto: ReturnType<typeof createAssert<SelectDto[]>>;
-      assertInsertDto: ReturnType<typeof createAssert<InsertDto[]>>;
-
+      assertSelectDto: ReturnType<typeof createAssert<SelectDto>>;
+      assertInsertDto: ReturnType<typeof createAssert<InsertDto>>;
       preFilterBuilded?: typeof buildWhereArray<Entity>;
     },
     data: InsertDto | InsertDto[],
-  ): Promise<RemoveKeysWithValueObjectOrArrayObject<SelectDto>[]> => {
+  ): Promise<RemoveKeysWithValueObjectOrArrayObject<SelectDto>> => {
     settings.assertInsertDto ? settings.assertInsertDto(data) : null;
     data = Array.isArray(data) ? data : [data];
+    let res: Entity[] = [];
+    try {
+      res = await entityManager.save(settings.entityDB, data);
+    } catch (e: any) {
+      if (e instanceof QueryFailedError) {
+        if (
+          e.message.startsWith('duplicate key value violates unique constraint')
+        ) {
+          throw new ConflictException(
+            `Unique constraint failed for keys: ${settings.uniqueKeys.join(
+              ', ',
+            )}`,
+          );
+        }
+      }
+      throw e;
+    }
+    if (res.length === 0) {
+      throw new Error('No data inserted');
+    }
+    const uniqueRes = res[0];
 
-    const res = await entityManager.save(settings.entityDB, data, {
-      chunk: 1000,
-    });
     //TODO: see if relations are showed
 
     // const resSelected = D.selectKeys(res, settings.selectKeys) as SelectDto[];
-    const ResWithOnlySelectKeys = res.map((el) =>
-      //@ts-expect-error
-      D.selectKeys(el, settings.selectKeys),
-    );
+    //@ts-expect-error
+    const ResWithOnlySelectKeys = D.selectKeys(uniqueRes, settings.selectKeys);
+    return ResWithOnlySelectKeys as RemoveKeysWithValueObjectOrArrayObject<SelectDto>;
+  };
 
-    return ResWithOnlySelectKeys as RemoveKeysWithValueObjectOrArrayObject<SelectDto>[];
+  export const isExists = async <Entity extends TBaseEntityRobusto>(
+    entityManager: EntityManager,
+    settings: {
+      entityDB: ObjectType<Entity>;
+      preFilterBuilded?: typeof buildWhereArray<Entity>;
+    },
+    id: Entity['id'],
+  ): Promise<boolean> => {
+    return entityManager.exists(settings.entityDB, {
+      where: { id, ...settings.preFilterBuilded },
+    } as FindManyOptions<Entity>);
+  };
+
+  export const patch = async <
+    Entity extends TBaseEntityRobusto,
+    UpdateDto extends DeepPartial<Entity>,
+    SelectDto extends DeepPartial<Entity>,
+  >(
+    entityManager: EntityManager,
+    settings: {
+      entityDB: ObjectType<Entity>;
+      uniqueKeys: (keyof UpdateDto)[];
+      selectKeys: (keyof SelectDto)[];
+      assertSelectDto?: ReturnType<typeof createAssert<SelectDto[]>>;
+      assertUpdateDto?: ReturnType<typeof createAssert<UpdateDto[]>>;
+      preFilterBuilded?: typeof buildWhereArray<Entity>;
+    },
+    id: Entity['id'],
+    data: UpdateDto,
+  ): Promise<RemoveKeysWithValueObjectOrArrayObject<SelectDto>> => {
+    const isExists = await RobustoHelper.isExists(entityManager, settings, id);
+
+    if (!isExists) {
+      throw new NotFoundException("Entity doesn't exist");
+    }
+
+    let res: ObjectType<Entity> = {} as ObjectType<Entity>;
+    try {
+      res = await entityManager.save(settings.entityDB, {
+        ...data,
+        id,
+      } as QueryDeepPartialEntity<Entity>);
+    } catch (e: any) {
+      if (e instanceof QueryFailedError) {
+        if (
+          e.message.startsWith('duplicate key value violates unique constraint')
+        ) {
+          throw new ConflictException(
+            `Unique constraint failed for keys: ${settings.uniqueKeys.join(
+              ', ',
+            )}`,
+          );
+        }
+      }
+      throw e;
+    }
+
+    //TODO: see if relations are showed
+
+    // const resSelected = D.selectKeys(res, settings.selectKeys) as SelectDto[];
+    //@ts-expect-error
+    const ResWithOnlySelectKeys = D.selectKeys(res, settings.selectKeys);
+    return ResWithOnlySelectKeys as RemoveKeysWithValueObjectOrArrayObject<SelectDto>;
+  };
+
+  export const deleteItem = async <Entity extends TBaseEntityRobusto>(
+    entityManager: EntityManager,
+    settings: {
+      entityDB: ObjectType<Entity>;
+    },
+    id: Entity['id'],
+  ) => {
+    await entityManager.delete(settings.entityDB, id);
   };
 }
 
