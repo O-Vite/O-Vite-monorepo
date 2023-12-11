@@ -63,7 +63,7 @@ export const useRobustoCrud =
           data,
         );
       },
-      patch: (data: UpdateDto & { id: Entity['id'] }) => {
+      patch: (id: Entity['id'], data: UpdateDto) => {
         return RobustoHelper.patch<Entity, UpdateDto, SelectDto>(
           entityManager,
           {
@@ -73,7 +73,7 @@ export const useRobustoCrud =
             assertUpdateDto: TheSettings.assertUpdateDto,
             preFilterBuilded: TheSettings.preFilterBuilded,
           },
-          data,
+          { ...data, id },
         );
       },
       delete: (id: Entity['id']) => {

@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { ComplainEntity } from './complain.entity';
 import { MessageEntity } from './message.entity';
 
-enum UserRole {
+export enum UserRole {
   ADMIN = 'admin',
   CLIENT = 'client',
   DELIVERER = 'deliverer',
