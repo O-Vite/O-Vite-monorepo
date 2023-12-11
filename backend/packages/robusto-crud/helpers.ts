@@ -10,7 +10,6 @@ import { TBaseEntityRobusto, TId } from './base-entity';
 import {
   TObjectValueOperatorWhere,
   TPagination,
-  assertListWhere,
   buildWhereArray,
 } from './filter-query';
 import { assert, createAssert, createAssertEquals } from 'typia';
@@ -29,14 +28,14 @@ export namespace RobustoHelper {
     settings: {
       entityDB: ObjectType<Entity>;
       selectKeys: (keyof SelectDto)[];
-      assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto[]>>;
+      assertSelectDtoArray: ReturnType<typeof createAssertEquals<SelectDto[]>>;
       preFilterBuilded?: typeof buildWhereArray<Entity> | undefined;
       filter?: TObjectValueOperatorWhere<Entity>[] | undefined;
       paginate?: TPagination | undefined;
     },
   ): Promise<SelectDto[]> => {
     const filterParsed = settings.filter
-      ? assertListWhere(settings.filter)
+      ? buildWhereArray<Entity>(settings.filter)
       : [];
     const paginateParsed = settings.paginate
       ? assert(settings.paginate)
@@ -52,7 +51,7 @@ export namespace RobustoHelper {
         ...filterParsed,
       } as FindOptionsWhere<any>,
     });
-    return settings.assertSelectDto(res);
+    return settings.assertSelectDtoArray(res);
   };
 
   export const fetchById = async <
@@ -111,10 +110,7 @@ export namespace RobustoHelper {
         if (
           e.message.startsWith('duplicate key value violates unique constraint')
         ) {
-          throw new ConflictException(
-            `Unique constraint failed for keys
-            )}`,
-          );
+          throw new ConflictException('Unique constraint failed for keys');
         }
       }
       throw e;

@@ -32,7 +32,7 @@ export const useRobustoCrud =
         return RobustoHelper.fetchAll<Entity, SelectDto>(entityManager, {
           entityDB: TheSettings.entityDB,
           selectKeys: TheSettings.selectKeys,
-          assertSelectDto: TheSettings.assertSelectDtoArray,
+          assertSelectDtoArray: TheSettings.assertSelectDtoArray,
           preFilterBuilded: TheSettings.preFilterBuilded,
           filter: Asettings?.filter,
           paginate: Asettings?.paginate,
