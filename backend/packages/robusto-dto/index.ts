@@ -1,11 +1,10 @@
-import { BaseEntityDb } from 'packages/robusto-crud/base-entity';
+import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
 import { Class } from 'type-fest';
 import { ObjectType } from 'typeorm';
 import { literals } from 'typia/lib/misc';
-import { UnionToArray } from '../../src/api/users/testBis';
 
 // -> lib //
-type TDto<Token extends PropertyKey> = {
+export type TDto<Token extends PropertyKey> = {
   readonly aa: { [K in Token]: void };
 };
 
@@ -45,7 +44,7 @@ export type TExtractDto<Entity extends object, T extends TDtoPerRole<any>> = {
 };
 
 export type TSettingCrudBis<
-  Entity extends BaseEntityDb,
+  Entity extends BaseEntityRobusto,
   Role extends TDtoPerRole<any>,
   T extends TExtractDto<Entity, Role> = TExtractDto<Entity, Role>,
 > = {
@@ -72,7 +71,7 @@ export type TSettingCrudBis<
 // }
 
 // type Admin = TDtoPerRole<'ADMIN'>;
-// type Client = DtoPerRole<'CLIENT'>;
+// type Client = TDtoPerRole<'CLIENT'>;
 
 // type AdminConfig = AdminGeneratorConfig<User>;
 
