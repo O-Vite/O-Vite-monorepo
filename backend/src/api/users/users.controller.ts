@@ -1,5 +1,5 @@
-import { Body, Controller, Get } from '@nestjs/common';
-import { Orm } from '../../services/database/database.service';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Orm, robustoCrud } from '../../services/database/database.service';
 import { UserEntity } from 'src/services/database/entities/user.entity';
 import { TId } from 'packages/robusto-crud/base-entity';
 import typia, { assert, createAssert, createAssertEquals } from 'typia';
@@ -27,74 +27,37 @@ type RESS = RemoveKeysWithValueObjectOrArrayObject<UserEntity>;
 
 @Controller('users')
 export class UsersController {
-  // private readonly crudator = robustoCrud({
-  //   entityDB: UserEntity,
-  //   selectKeys: typia.misc.literals<keyof UserDto>(),
-  //   selectDto: {} as UserDto,
-  //   insertDto: {} as UserCreateDto,
-  //   updateDto: {} as UserUpdateDto,
-  //   wherePrefilter: [],
-  // });
+  private readonly crudator = robustoCrud({
+    entityDB: UserEntity,
+    selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
+    assertSelectDto: createAssertEquals<UserSelectDto>(),
+    assertSelectDtoArray: createAssertEquals<UserSelectDto[]>(),
+    assertInsertDto: createAssertEquals<UserCreateDto>(),
+    assertUpdateDto: createAssertEquals<UserUpdateDto>(),
+  });
 
-  @TypedRoute.Get()
+  @Get()
   async getAll(): Promise<UserSelectDto[]> {
-    return RobustoHelper.fetchAll(Orm, {
-      entityDB: UserEntity,
-      selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
-      assertSelectDto: createAssertEquals<UserSelectDto[]>(),
-    });
+    return this.crudator.fetchAll();
   }
 
-  @TypedRoute.Post()
+  @Post()
   async create(@Body() data: UserCreateDto) {
-    return RobustoHelper.insert(
-      Orm,
-      {
-        entityDB: UserEntity,
-        selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
-        assertSelectDto: createAssertEquals<UserSelectDto>(),
-        assertInsertDto: createAssertEquals<UserCreateDto>(),
-      },
-      data,
-    );
+    return this.crudator.insert(data);
   }
 
   @TypedRoute.Get(':id')
   async getById(@TypedParam('id') id: TId) {
-    return RobustoHelper.fetchById(
-      Orm,
-      {
-        entityDB: UserEntity,
-        selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
-        assertSelectDto: createAssertEquals<UserSelectDto>(),
-      },
-      id,
-    );
+    return this.crudator.fetchById(id);
   }
 
   @TypedRoute.Delete(':id')
   async delete(@TypedParam('id') id: TId) {
-    return RobustoHelper.deleteItem(
-      Orm,
-      {
-        entityDB: UserEntity,
-      },
-      id,
-    );
+    return this.crudator.delete(id);
   }
 
   @TypedRoute.Patch(':id')
   async update(@TypedParam('id') id: TId, @Body() data: UserUpdateDto) {
-    //TODO: patch doesn't work (return not good as select full entity)
-    return RobustoHelper.patch(
-      Orm,
-      {
-        entityDB: UserEntity,
-        selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
-        assertSelectDto: createAssertEquals<UserSelectDto>(),
-        assertUpdateDto: createAssertEquals<UserUpdateDto>(),
-      },
-      { ...data },
-    );
+    return this.crudator.patch(data);
   }
 }

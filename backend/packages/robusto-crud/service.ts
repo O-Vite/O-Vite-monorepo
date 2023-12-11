@@ -10,14 +10,13 @@ import { RobustoHelper } from './helpers';
 
 export const useRobustoCrud =
   (entityManager: EntityManager) =>
-  async <
+  <
     Entity extends TBaseEntityRobusto,
     SelectDto extends DeepPartial<Entity>,
     InsertDto extends DeepPartial<Entity>,
     UpdateDto extends DeepPartial<Entity>,
   >(TheSettings: {
     entityDB: ObjectType<Entity>;
-    uniqueKeys: (keyof InsertDto)[];
     selectKeys: (keyof SelectDto)[];
     assertSelectDto: ReturnType<typeof createAssertEquals<SelectDto>>;
     assertSelectDtoArray: ReturnType<typeof createAssertEquals<SelectDto[]>>;
@@ -26,7 +25,7 @@ export const useRobustoCrud =
     preFilterBuilded?: typeof buildWhereArray<Entity>;
   }) => {
     return {
-      fetchAll: (Asettings: {
+      fetchAll: (Asettings?: {
         filter?: TObjectValueOperatorWhere<Entity>[];
         paginate?: TPagination;
       }): Promise<SelectDto[]> => {
@@ -35,8 +34,8 @@ export const useRobustoCrud =
           selectKeys: TheSettings.selectKeys,
           assertSelectDto: TheSettings.assertSelectDtoArray,
           preFilterBuilded: TheSettings.preFilterBuilded,
-          filter: Asettings.filter,
-          paginate: Asettings.paginate,
+          filter: Asettings?.filter,
+          paginate: Asettings?.paginate,
         });
       },
       fetchById: (id: Entity['id']): Promise<SelectDto> => {
