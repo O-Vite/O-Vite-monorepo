@@ -3,11 +3,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ovite/auth/bloc/auth_bloc.dart';
-import 'package:ovite/home/view/home_screen.dart';
+import 'package:ovite/delivery/delivery_home.dart';
 import 'package:ovite/login/login.dart';
-import 'package:ovite/home/home.dart';
 import 'package:ovite/shared/splash/view/splash_page.dart';
 import 'package:ovite/shared/storage/preferences_manager.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Assurez-vous que les liaisons Flutter sont initialisées
@@ -45,13 +45,14 @@ class MyHomePage extends StatelessWidget {
       builder: (context, child) {
         return BlocProvider(
           create: (context) => AuthBloc()..add(AuthCheckRequested()),
+          //child: const LoginScreen(),
           child: BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               switch (state.status) {
                 case AuthStatus.authenticated:
                   log("authenticated");
                   _navigator.pushAndRemoveUntil<void>(
-                    HomeScreen.route(),
+                    DeliveryHomeScreen.route(),
                         (route) => false,
                   );
                   break;

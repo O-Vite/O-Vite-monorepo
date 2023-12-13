@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../auth/bloc/auth_bloc.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class DeliveryHomeScreen extends StatelessWidget {
+  const DeliveryHomeScreen({super.key});
 
   static Route<void> route() {
-    return MaterialPageRoute<void>(builder: (_) => const HomeScreen());
+    return MaterialPageRoute<void>(builder: (_) => const DeliveryHomeScreen());
   }
 
   /*static Route<void> route(BuildContext context) {

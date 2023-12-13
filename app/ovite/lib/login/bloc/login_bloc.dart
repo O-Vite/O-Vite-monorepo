@@ -18,7 +18,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   LoginBloc({required this.authBloc}) : super(const LoginState()) {
 
-    on<LoginEmailChanged>((event, emit) {
+    /*on<LoginEmailChanged>((event, emit) {
       final email = Email.dirty(event.email);
       emit(state.copyWith(email: email, isValid: Formz.validate([state.password, email])));
     });
@@ -26,37 +26,36 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginPasswordChanged>((event, emit) {
       final password = Password.dirty(event.password);
       emit(state.copyWith(password: password, isValid: Formz.validate([state.email, password])));
-    });
+    });*/
 
     on<LoginFormSubmitted>((event, emit) async {
       //if (state.isValid) {
-        emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
+        emit(state.copyWith(status: LoginStatus.inProgress));
         try {
           final response = await AuthApiServices.instance.login(
-              state.email.value,
-              state.password.value,
+              event.email,
+              event.password,
           );
 
           //if (response['token'] != null) {
           log("LoginFormSubmitted, login response => '$response'", name: "LOGIN BLOC");
           if (response != null) {
 
-
             // Save token in local storage
             String accessToken = response;
             await PreferencesManager().setToken('access_token', accessToken);
-            emit(state.copyWith(status: FormzSubmissionStatus.success));
+            emit(state.copyWith(status: LoginStatus.success));
             // Emet le changement d'état à AuthBloc
             //if (authBloc != null) {
               authBloc.add(const AuthStatusChanged(AuthStatus.authenticated));
               log("AuthStatusChanged TO AUTHENTICATED | TOKEN => '$accessToken'", name: "LOGIN BLOC");
             //}
           } else if (response['error'] != null) {
-            emit(state.copyWith(status: FormzSubmissionStatus.failure));
+            emit(state.copyWith(status: LoginStatus.failure));
           }
 
         } catch (_) {
-          emit(state.copyWith(status: FormzSubmissionStatus.failure));
+          emit(state.copyWith(status: LoginStatus.failure));
         }
       }
     //}

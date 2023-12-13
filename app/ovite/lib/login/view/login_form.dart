@@ -3,61 +3,126 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:ovite/shared/constants/constants.dart';
+import 'package:ovite/shared/utils/validator.dart';
+import 'package:ovite/shared/widgets/already_have_an_account_acheck.dart';
 import '../../shared/widgets/auth_text_field.dart';
 import '../bloc/login_bloc.dart';
 
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
 
   @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  // Permet de récupérer la valeur de chaque champs et d'appliquer le validateur.
+  final _formKeys = GlobalKey<FormState>();
+
+  final eventEmailController = TextEditingController();
+  final eventPasswordController = TextEditingController();
+
+  late FocusNode focusLoginButton;
+  late FocusNode focusPassword;
+
+  @override
+  void initState() {
+    super.initState();
+    focusPassword = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    focusPassword.dispose();
+    super.dispose();
+    eventEmailController.dispose();
+    eventPasswordController.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginBloc, LoginState>(
+    return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) {
-        if (state.status == FormzSubmissionStatus.failure) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              const SnackBar(content: Text('Authentication Failure')),
-            );
-        } else {
-          final data =  state.status;
-          log('state.status => $data', name: "Login form");
+        if (state.status == LoginStatus.failure) {
+          ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(
+            const SnackBar(content: Text('Authentication Failure')),
+          );
         }
       },
-      child: Align(
-        alignment: const Alignment(0, -1 / 3),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _EmailInput(),
-            const Padding(padding: EdgeInsets.all(12)),
-            _PasswordInput(),
-            const Padding(padding: EdgeInsets.all(12)),
-            const _LoginButton(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EmailInput extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
-      buildWhen: (previous, current) => previous.email != current.email,
       builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: AuthTextField(
-            hint: 'Email',
-            labelText: 'Email',
-            key: const Key('signInForm_emailInput_textField'),
-            isRequiredField: true,
-            keyboardType: TextInputType.text,
-            onChanged: (String email) => context.read<LoginBloc>().add(LoginEmailChanged(email)),
-            error: "",
+        return Form(
+          key: _formKeys,
+          child: Column(
+            children: [
+              TextFormField(
+                //keyboardType: TextInputType.emailAddress,
+                //textInputAction: TextInputAction.next,
+                cursorColor: kPrimaryColor,
+                //onSaved: (email) {},
+                autofocus: true,
+                controller: eventEmailController,
+                validator: (String? value) {
+                  return Validator.validateEmail(value);
+                },
+                decoration: const InputDecoration(
+                  hintText: "Email",
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: Icon(Icons.person),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: defaultPadding),
+                child: TextFormField(
+                  //textInputAction: TextInputAction.done,
+                  obscureText: true,
+                  cursorColor: kPrimaryColor,
+                  focusNode: focusPassword,
+                  controller: eventPasswordController,
+                  validator: (String? value) {
+                    return Validator.validatePassword(value);
+                  },
+                  decoration: const InputDecoration(
+                    hintText: "Mot de passe",
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.all(defaultPadding),
+                      child: Icon(Icons.lock),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: defaultPadding),
+              ElevatedButton.icon(
+                icon: state.status == LoginStatus.inProgress ? const CircularProgressIndicator() : const Icon(Icons.login),
+                onPressed: () {
+                  if (_formKeys.currentState!.validate()) {
+                    // Récupérer les valeurs des champs avant le dispose.
+                    final String eventEmail = eventEmailController.text;
+                    final String eventPassword = eventPasswordController.text;
+
+                    context.read<LoginBloc>().add(LoginFormSubmitted(eventEmail, eventPassword));
+                    // Permet de désactiver le clavier lorsque je clique sur ce button.
+                    FocusScope.of(context).requestFocus(FocusNode());
+                  }
+                },
+                label: Text(state.status == LoginStatus.inProgress ? "Logging".toUpperCase() : "Se Connecter".toUpperCase(),),
+              ),
+              const SizedBox(height: defaultPadding),
+              AlreadyHaveAnAccountCheck(
+                press: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      //builder: (context) { return const SignUpScreen();},
+                      builder: (context) { return const Placeholder();},
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         );
       },
@@ -65,29 +130,45 @@ class _EmailInput extends StatelessWidget {
   }
 }
 
-class _PasswordInput extends StatelessWidget {
+/*
+class _LoginButton extends StatelessWidget {
+  const _LoginButton({super.key, required this.focusNode, required this.eventEmailController, required this.eventPasswordController, required this.formKeys});
+
+  final FocusNode focusNode;
+  final GlobalKey formKeys;
+  final TextEditingController eventEmailController;
+  final TextEditingController eventPasswordController;
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
-      buildWhen: (previous, current) => previous.email != current.email,
+      buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: AuthTextField(
-            hint: 'Password',
-            labelText: 'Password',
-            key: const Key('signInForm_passwordInput_textField'),
-            isRequiredField: true,
-            keyboardType: TextInputType.text,
-            onChanged: (String password) => context.read<LoginBloc>().add(LoginPasswordChanged(password)),
-            error: "",
+        return state.status == LoginStatus.inProgress ? const CircularProgressIndicator() : SizedBox(
+          width: MediaQuery.of(context).size.width/2,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () {
+              if (formKeys.currentState!.validate()) {
+                // Récupérer les valeurs des champs avant le dispose.
+                final eventUsername = eventEmailController.text;
+                final eventPassword = eventPasswordController.text;
+                //ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Loading ...")));
+                // Permet de désactiver le clavier lorsque je clique sur ce button.
+                FocusScope.of(context).requestFocus(FocusNode());
+                context.read<LoginBloc>().add(const LoginFormSubmitted());
+              }
+            },
+            child: Text("Se Connecter".toUpperCase(),),
           ),
         );
       },
     );
   }
 }
+*/
 
+/*
 class _LoginButton extends StatelessWidget {
   const _LoginButton({super.key});
 
@@ -96,7 +177,7 @@ class _LoginButton extends StatelessWidget {
     return BlocBuilder<LoginBloc, LoginState>(
       buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
-        return state.status.isInProgress ? const CircularProgressIndicator() : SizedBox(
+        return state.status == LoginStatus.inProgress ? const CircularProgressIndicator() : SizedBox(
           width: MediaQuery.of(context).size.width/2,
           height: 50,
           child: ElevatedButton(
@@ -118,33 +199,7 @@ class _LoginButton extends StatelessWidget {
     );
   }
 }
+*/
 
-class _SignUpButton extends StatelessWidget {
-  const _SignUpButton({required Key key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
-      buildWhen: (previous, current) => previous.status != current.status,
-      builder: (context, state) {
-        return SizedBox(
-          width: MediaQuery.of(context).size.width/2,
-          height: 50,
-          child: ElevatedButton(
-            style: ButtonStyle(
-                backgroundColor: const MaterialStatePropertyAll<Color>(Colors.green),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                    )
-                )
-            ),
-            onPressed: () => Navigator.of(context).pushNamed('/login/signUp'),
-            child: const Text("Sign up"),
-          ),
-        );
-      },
-    );
-  }
-}
 

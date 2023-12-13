@@ -15,11 +15,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(state.copyWith(status: AuthStatus.unknown));
       } else {
         dynamic storedToken = PreferencesManager().getToken('access_token');
-        if (storedToken == null) {
+        if (storedToken == '') {
           emit(state.copyWith(status: AuthStatus.unauthenticated));
         } else {
           emit(
-            storedToken != null
+            storedToken != ''
                 ? state.copyWith(status: AuthStatus.authenticated, token: storedToken)
                 : state.copyWith(status: AuthStatus.unauthenticated),
           );
@@ -33,7 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           dynamic storedToken = PreferencesManager().getToken('access_token');
           log("storedToken => '$storedToken'", name: "AUTH_BLOC");
           emit(
-            storedToken != null
+            storedToken != ''
                 ? state.copyWith(status: AuthStatus.authenticated, token: storedToken)
                 : state.copyWith(status: AuthStatus.unauthenticated),
           );
@@ -45,7 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
 
     on<AuthLogoutRequested>((event, emit) async {
-      emit(state.copyWith(status: AuthStatus.unauthenticated, token: null));
+      emit(state.copyWith(status: AuthStatus.unauthenticated, token: ''));
       // TODO : type 'Null' is not a subtype of type 'String'
       await PreferencesManager().setToken('access_token', '');
     });
