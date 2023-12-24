@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ovite/auth/bloc/auth_bloc.dart';
 import 'package:ovite/delivery/delivery_home.dart';
 import 'package:ovite/login/login.dart';
+import 'package:ovite/register/register.dart';
 import 'package:ovite/shared/splash/view/splash_page.dart';
 import 'package:ovite/shared/storage/preferences_manager.dart';
 
@@ -45,8 +46,8 @@ class MyHomePage extends StatelessWidget {
       builder: (context, child) {
         return BlocProvider(
           create: (context) => AuthBloc()..add(AuthCheckRequested()),
-          //child: const LoginScreen(),
-          child: BlocListener<AuthBloc, AuthState>(
+          child: const RegisterScreen(),
+          /*child: BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               switch (state.status) {
                 case AuthStatus.authenticated:
@@ -68,7 +69,7 @@ class MyHomePage extends StatelessWidget {
               }
             },
             child: child,
-          )
+          )*/
         );
       },
       onGenerateRoute: (_) => SplashPage.route(),

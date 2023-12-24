@@ -49,10 +49,10 @@ class LoginScreen extends StatelessWidget {
                         const SizedBox(height: defaultPadding * 2),
                       ],
                     ),
-                    /*const SizedBox(
+                    const SizedBox(
                       width: 450,
                       child: LoginForm(),
-                    ),*/
+                    ),
                   ]
                 ),
               ),
@@ -82,7 +82,6 @@ class MobileLoginScreen extends StatelessWidget {
               child: SvgPicture.asset("assets/icons/logo.svg"),
             ),
             const Expanded(
-
               child: LoginForm(),
             ),
           ],

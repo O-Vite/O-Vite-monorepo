@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 import 'package:ovite/shared/constants/constants.dart';
 import 'package:ovite/shared/utils/validator.dart';
-import 'package:ovite/shared/widgets/already_have_an_account_acheck.dart';
+import 'package:ovite/shared/widgets/already_have_an_account_check.dart';
 import '../../shared/widgets/auth_text_field.dart';
 import '../bloc/login_bloc.dart';
 
@@ -80,7 +80,7 @@ class _LoginFormState extends State<LoginForm> {
                   //textInputAction: TextInputAction.done,
                   obscureText: true,
                   cursorColor: kPrimaryColor,
-                  focusNode: focusPassword,
+                    focusNode: focusPassword,
                   controller: eventPasswordController,
                   validator: (String? value) {
                     return Validator.validatePassword(value);
@@ -113,13 +113,12 @@ class _LoginFormState extends State<LoginForm> {
               const SizedBox(height: defaultPadding),
               AlreadyHaveAnAccountCheck(
                 press: () {
-                  Navigator.push(
+                  /*Navigator.push(
                     context,
                     MaterialPageRoute(
                       //builder: (context) { return const SignUpScreen();},
-                      builder: (context) { return const Placeholder();},
                     ),
-                  );
+                  );*/
                 },
               ),
             ],
