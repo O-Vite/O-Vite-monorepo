@@ -4,6 +4,14 @@ class UserSession {
   static String? jwtToken;
   static String? userRole;
 
+  static Future<void> logout() async {
+    jwtToken = null;
+    userRole = null;
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('jwt_token');
+  }
+
   static Future<void> setSession(String token, String role) async {
     jwtToken = token;
     userRole = role;
