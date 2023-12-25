@@ -6,6 +6,7 @@ import '../../register/signup_page.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:ovite/src/features/client/screens/client_home_page.dart';
 import 'package:ovite/src/features/livreur/screens/livreur_home_page.dart';
+import 'package:ovite/src/shared/user_session.dart'; // Importez UserSession
 
 class LoginForm extends StatefulWidget {
   @override
@@ -40,7 +41,7 @@ class _LoginFormState extends State<LoginForm> {
 
       if (result != null && result.containsKey('access_token')) {
         Map<String, dynamic> tokenData = Jwt.parseJwt(result['access_token']);
-        print('Données JWT décodées : $tokenData');
+        UserSession.setSession(result['access_token'], tokenData['role']);
 
         if (tokenData['role'] == 'client') {
           Navigator.of(context).pushReplacement(
