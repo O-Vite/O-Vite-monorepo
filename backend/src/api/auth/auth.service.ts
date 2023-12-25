@@ -16,9 +16,12 @@ export type TSignUpResponse = {
 export type LoginDto = Pick<UserEntity, 'email' | 'password'>;
 export type SelectLoginDto = Pick<
   UserEntity,
-  'id' | 'email' | 'password' | 'role'
+  'id' | 'email' | 'password' | 'role' | 'firstName' | 'lastName'
 >;
-export type InsertRegisterDto = Pick<UserEntity, 'email' | 'password' | 'role'>;
+export type InsertRegisterDto = Pick<
+  UserEntity,
+  'email' | 'password' | 'role' | 'firstName' | 'lastName'
+>;
 
 @Injectable()
 export class AuthService {

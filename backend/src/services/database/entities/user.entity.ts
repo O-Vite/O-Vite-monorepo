@@ -38,7 +38,7 @@ export class UserEntity extends BaseEntityRobusto {
   @Column('text', {
     default: '',
   })
-  name!: string;
+  lastName!: string;
 
   @Column('text', {
     default: '',
