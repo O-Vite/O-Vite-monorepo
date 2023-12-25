@@ -10,7 +10,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Background(
+    return Background(
       child: SingleChildScrollView(
         child: Responsive(
           mobile: MobileLoginScreen(),
@@ -25,7 +25,7 @@ class LoginScreen extends StatelessWidget {
                   children: [
                     SizedBox(
                       width: 450,
-                      child: LoginForm(),
+                      child: LoginForm(), // Retirez 'const' d'ici
                     ),
                   ],
                 ),
@@ -45,7 +45,8 @@ class MobileLoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
+      // Retirez également 'const' d'ici
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         LoginScreenTopImage(),
@@ -54,7 +55,7 @@ class MobileLoginScreen extends StatelessWidget {
             Spacer(),
             Expanded(
               flex: 8,
-              child: LoginForm(),
+              child: LoginForm(), // 'LoginForm' est déjà sans 'const'
             ),
             Spacer(),
           ],

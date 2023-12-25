@@ -144,7 +144,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 _selectedRole = newValue!;
               });
             },
-            items: <String>['admin', 'client', 'deliverer', 'seller', 'support']
+            items: <String>['client', 'deliverer']
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
