@@ -3,6 +3,7 @@ import 'package:ovite/src/shared/constants/constants.dart';
 import 'package:ovite/src/features/auth/login/login_page.dart';
 import 'package:ovite/src/shared/cart.dart';
 import 'package:provider/provider.dart';
+import 'package:ovite/src/shared/user_session.dart';
 
 void main() => runApp(const MyApp());
 
@@ -12,7 +13,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => Cart(),
+      create: (context) {
+        var cart = Cart();
+        cart.loadItems();
+        return cart;
+      },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Auth',

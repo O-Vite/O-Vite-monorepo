@@ -1,11 +1,10 @@
-// Fichier: lib/src/features/client/screens/client_main_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:ovite/src/features/client/screens/commande.dart';
 import 'package:ovite/src/features/client/screens/profil.dart';
 import 'package:ovite/src/features/client/widgets/ClientHomePageContent.dart';
-import 'package:ovite/src/shared/cart.dart';
 import 'package:ovite/src/features/client/screens/cartScreen.dart';
+import 'package:ovite/src/shared/user_session.dart';
+import 'package:ovite/src/features/auth/login/login_page.dart';
 
 class ClientMainPage extends StatefulWidget {
   @override
@@ -13,7 +12,17 @@ class ClientMainPage extends StatefulWidget {
 }
 
 class _ClientMainPageState extends State<ClientMainPage> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    UserSession.init().then((_) {
+      setState(() {
+        _currentIndex = UserSession.currentTabIndex ?? 0;
+      });
+    });
+  }
 
   final List<Widget> _pages = [
     ClientHomePageContent(),
@@ -24,6 +33,7 @@ class _ClientMainPageState extends State<ClientMainPage> {
     setState(() {
       _currentIndex = index;
     });
+    UserSession.setTabIndex(index);
   }
 
   @override
@@ -32,30 +42,88 @@ class _ClientMainPageState extends State<ClientMainPage> {
       appBar: AppBar(
         title: Text('Client Dashboard'),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Nom du Client',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('Accueil'),
+              onTap: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _currentIndex = 0;
+                });
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.list),
+              title: Text('Commande'),
+              onTap: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _currentIndex = 1;
+                });
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text('Profil'),
+              onTap: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _currentIndex = 2;
+                });
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.shopping_cart),
+              title: Text('Panier'),
+              onTap: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _currentIndex = 3;
+                });
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.exit_to_app),
+              title: Text('Déconnexion'),
+              onTap: () async {
+                await UserSession.clearSession();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.blue, // Couleur des éléments sélectionnés
-        unselectedItemColor:
-            Colors.grey, // Couleur des éléments non sélectionnés
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
         items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Commande'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
           BottomNavigationBarItem(
-            icon: new Icon(Icons.home),
-            label: 'Accueil',
-          ),
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.list),
-            label: 'Commande',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Panier',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
+              icon: Icon(Icons.shopping_cart), label: 'Panier'),
+          // Ajoutez d'autres items ici si nécessaire
         ],
       ),
     );
