@@ -64,4 +64,16 @@ class Cart with ChangeNotifier {
         json.encode(_items.map((key, item) => MapEntry(key, item.toJson()))));
     notifyListeners();
   }
+
+  void removeItem(String productId) {
+    if (_items.containsKey(productId)) {
+      _items.remove(productId);
+      notifyListeners();
+    }
+  }
+
+  void clear() {
+    _items = {};
+    notifyListeners();
+  }
 }

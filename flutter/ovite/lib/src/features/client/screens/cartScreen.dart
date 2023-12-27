@@ -14,10 +14,21 @@ class CartScreen extends StatelessWidget {
         itemCount: cart.items.length,
         itemBuilder: (ctx, i) {
           var cartItem = cart.items.values.toList()[i];
+          var productId = cart.items.keys.toList()[i];
           return ListTile(
             title: Text(cartItem.title),
-            trailing: Text('${cartItem.price}€'),
-            // Ajoutez ici un bouton pour supprimer l'article du panier si nécessaire
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${cartItem.price}€'),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    cart.removeItem(productId);
+                  },
+                ),
+              ],
+            ),
           );
         },
       ),
