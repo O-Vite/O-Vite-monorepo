@@ -6,7 +6,7 @@ import '../../register/signup_page.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:ovite/src/features/client/screens/client_home_page.dart';
 import 'package:ovite/src/features/livreur/screens/livreur_home_page.dart';
-import 'package:ovite/src/shared/user_session.dart'; // Importez UserSession
+import 'package:ovite/src/shared/user_session.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -45,7 +45,7 @@ class _LoginFormState extends State<LoginForm> {
 
         if (tokenData['role'] == 'client') {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => ClientHomePage()),
+            MaterialPageRoute(builder: (context) => ClientMainPage()),
           );
         } else if (tokenData['role'] == 'deliverer') {
           Navigator.of(context).pushReplacement(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_auth/Screens/Welcome/welcome_screen.dart';
 import 'package:ovite/src/shared/constants/constants.dart';
 import 'package:ovite/src/features/auth/login/login_page.dart';
+import 'package:ovite/src/shared/cart.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(const MyApp());
 
@@ -10,10 +11,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Auth',
-      theme: ThemeData(
+    return ChangeNotifierProvider(
+      create: (context) => Cart(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Auth',
+        theme: ThemeData(
           primaryColor: kPrimaryColor,
           scaffoldBackgroundColor: Colors.white,
           elevatedButtonTheme: ElevatedButtonThemeData(
@@ -37,8 +40,10 @@ class MyApp extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(30)),
               borderSide: BorderSide.none,
             ),
-          )),
-      home: const LoginScreen(),
+          ),
+        ),
+        home: const LoginScreen(),
+      ),
     );
   }
 }
