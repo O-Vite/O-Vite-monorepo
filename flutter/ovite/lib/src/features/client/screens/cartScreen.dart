@@ -6,6 +6,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Cart>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Votre Panier'),
@@ -20,10 +21,25 @@ class CartScreen extends StatelessWidget {
                 var productId = cart.items.keys.toList()[i];
                 return ListTile(
                   title: Text(cartItem.title),
+                  subtitle: Text(
+                      'Total: ${(cartItem.price * cartItem.quantity).toStringAsFixed(2)}€'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('${cartItem.price}€'),
+                      IconButton(
+                        icon: Icon(Icons.remove),
+                        onPressed: () {
+                          cart.decreaseQuantity(productId);
+                        },
+                      ),
+                      Text('${cartItem.quantity}'),
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          cart.addItem(
+                              productId, cartItem.price, cartItem.title);
+                        },
+                      ),
                       IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
@@ -41,15 +57,45 @@ class CartScreen extends StatelessWidget {
             child: ElevatedButton(
               child: Text('Valider le Panier'),
               onPressed: () {
-                // Logique pour valider le panier
+                _showDeliveryAddressModal(context, cart);
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50), // Largeur totale
+                minimumSize: Size(double.infinity, 50),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _showDeliveryAddressModal(BuildContext context, Cart cart) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String address = '';
+        return AlertDialog(
+          title: Text('Adresse de livraison'),
+          content: TextField(
+            onChanged: (value) => address = value,
+            decoration: InputDecoration(hintText: 'Entrez votre adresse'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Annuler'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text('Confirmer'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
