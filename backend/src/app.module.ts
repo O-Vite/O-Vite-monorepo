@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './services/database/database.module';
 import { UsersModule } from './api/users/users.module';
 import { AuthModule } from './api/auth/auth.module';
+import { ProductModule } from './api/products/product.module';
 // import { UsersModule } from './api/users/users.module';
 // import { AuthModule } from './api/auth/auth.module';
 
@@ -16,6 +17,7 @@ import { AuthModule } from './api/auth/auth.module';
     DatabaseModule,
     UsersModule,
     AuthModule,
+    ProductModule,
   ],
   controllers: [],
   // providers: [
