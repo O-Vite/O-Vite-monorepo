@@ -5,6 +5,7 @@ import 'package:ovite/src/features/client/widgets/ClientHomePageContent.dart';
 import 'package:ovite/src/features/client/screens/cartScreen.dart';
 import 'package:ovite/src/shared/user_session.dart';
 import 'package:ovite/src/features/auth/login/login_page.dart';
+import 'package:ovite/src/features/client/screens/suiviCommande.dart';
 
 class ClientMainPage extends StatefulWidget {
   @override
@@ -26,6 +27,7 @@ class _ClientMainPageState extends State<ClientMainPage> {
 
   final List<Widget> _pages = [
     ClientHomePageContent(),
+    CommandesPage(),
     CartScreen(),
   ];
 
@@ -120,7 +122,6 @@ class _ClientMainPageState extends State<ClientMainPage> {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
           BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Commande'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
           BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart), label: 'Panier'),
           // Ajoutez d'autres items ici si nécessaire

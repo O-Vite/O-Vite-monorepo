@@ -10,27 +10,45 @@ class CartScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Votre Panier'),
       ),
-      body: ListView.builder(
-        itemCount: cart.items.length,
-        itemBuilder: (ctx, i) {
-          var cartItem = cart.items.values.toList()[i];
-          var productId = cart.items.keys.toList()[i];
-          return ListTile(
-            title: Text(cartItem.title),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${cartItem.price}€'),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    cart.removeItem(productId);
-                  },
-                ),
-              ],
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: cart.items.length,
+              itemBuilder: (ctx, i) {
+                var cartItem = cart.items.values.toList()[i];
+                var productId = cart.items.keys.toList()[i];
+                return ListTile(
+                  title: Text(cartItem.title),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${cartItem.price}€'),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          cart.removeItem(productId);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+          Container(
+            padding: EdgeInsets.all(10),
+            child: ElevatedButton(
+              child: Text('Valider le Panier'),
+              onPressed: () {
+                // Logique pour valider le panier
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50), // Largeur totale
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
