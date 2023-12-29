@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { OrderProductEntity } from '../../services/database/entities/order_product.entity';
 
 @Entity()
 export class Product {
@@ -16,6 +17,9 @@ export class Product {
 
   @Column()
   imageUrl: string;
+
+  @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.product)
+  orderProducts!: OrderProductEntity[];
 
   constructor(
     name: string,

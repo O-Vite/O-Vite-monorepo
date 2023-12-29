@@ -1,16 +1,12 @@
-import { Entity, OneToOne, JoinColumn, OneToMany } from 'typeorm';
-import { UserEntity } from './user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
 
 @Entity('client')
 export class ClientEntity extends BaseEntityRobusto {
-  @OneToOne(() => UserEntity)
-  @JoinColumn()
-  user!: UserEntity;
+  @Column('text')
+  name!: string;
 
-  @OneToMany(() => OrderEntity, (order) => order.client, {
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => OrderEntity, (order) => order.client)
   orders!: OrderEntity[];
 }

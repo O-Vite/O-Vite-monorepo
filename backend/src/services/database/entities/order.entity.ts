@@ -19,7 +19,7 @@ export class OrderEntity extends BaseEntityRobusto {
   state!: OrderState;
 
   @Column('text')
-  address!: string;
+  address?: string;
 
   @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.order, {
     cascade: true,
@@ -27,7 +27,7 @@ export class OrderEntity extends BaseEntityRobusto {
   orderProducts!: OrderProductEntity[];
 
   @ManyToOne(() => ClientEntity, (client) => client.orders)
-  client!: ClientEntity;
+  client?: ClientEntity;
 
   @ManyToOne(() => DelivererEntity, (deliverer) => deliverer.orders)
   deliverer!: DelivererEntity;

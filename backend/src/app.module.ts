@@ -5,6 +5,7 @@ import { DatabaseModule } from './services/database/database.module';
 import { UsersModule } from './api/users/users.module';
 import { AuthModule } from './api/auth/auth.module';
 import { ProductModule } from './api/products/product.module';
+import { OrderModule } from './api/orders/order.module';
 // import { UsersModule } from './api/users/users.module';
 // import { AuthModule } from './api/auth/auth.module';
 
@@ -18,6 +19,7 @@ import { ProductModule } from './api/products/product.module';
     UsersModule,
     AuthModule,
     ProductModule,
+    OrderModule,
   ],
   controllers: [],
   // providers: [
