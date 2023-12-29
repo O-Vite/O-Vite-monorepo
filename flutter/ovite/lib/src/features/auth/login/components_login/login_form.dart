@@ -41,7 +41,10 @@ class _LoginFormState extends State<LoginForm> {
 
       if (result != null && result.containsKey('access_token')) {
         Map<String, dynamic> tokenData = Jwt.parseJwt(result['access_token']);
-        UserSession.setSession(result['access_token'], tokenData['role']);
+        UserSession.setSession(
+          result['access_token'],
+          tokenData['role'],
+        );
 
         if (tokenData['role'] == 'client') {
           Navigator.of(context).pushReplacement(

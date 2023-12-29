@@ -19,7 +19,7 @@ export class OrderEntity extends BaseEntityRobusto {
   state!: OrderState;
 
   @Column('text')
-  address?: string;
+  address!: string;
 
   @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.order, {
     cascade: true,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ovite/src/shared/cart.dart';
+import 'package:http/http.dart' as http;
+import 'package:ovite/src/shared/user_session.dart';
+import 'dart:convert';
 
 class CartScreen extends StatelessWidget {
   @override
@@ -73,11 +76,11 @@ class CartScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String address = '';
+        String deliveryAddress = '';
         return AlertDialog(
           title: Text('Adresse de livraison'),
           content: TextField(
-            onChanged: (value) => address = value,
+            onChanged: (value) => deliveryAddress = value,
             decoration: InputDecoration(hintText: 'Entrez votre adresse'),
           ),
           actions: <Widget>[
@@ -91,11 +94,57 @@ class CartScreen extends StatelessWidget {
               child: Text('Confirmer'),
               onPressed: () {
                 Navigator.of(context).pop();
+                sendOrder(cart, deliveryAddress, context);
               },
             ),
           ],
         );
       },
+    );
+  }
+}
+
+Future<void> sendOrder(
+    Cart cart, String deliveryAddress, BuildContext context) async {
+  var userId = UserSession.userId;
+  var orderProducts = cart.items.values.map((cartItem) {
+    return {
+      'productId': cartItem.id,
+      'quantity': cartItem.quantity,
+    };
+  }).toList();
+
+  var orderData = json.encode({
+    'clientId': userId,
+    'deliveryAddress': deliveryAddress,
+    'orderProducts': orderProducts,
+    'state': 'not_taken',
+  });
+
+  try {
+    var url = Uri.parse('http://localhost:3000/orders');
+    var response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: orderData,
+    );
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Commande envoyée avec succès')),
+      );
+      cart.clear();
+    } else {
+      print('État : ${response.statusCode}');
+      print('Réponse : ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de l\'envoi de la commande')),
+      );
+    }
+  } catch (e) {
+    print('Exception: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Erreur lors de l\'envoi de la commande: $e')),
     );
   }
 }
