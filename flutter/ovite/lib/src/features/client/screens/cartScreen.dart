@@ -115,7 +115,7 @@ Future<void> sendOrder(
   }).toList();
 
   var orderData = json.encode({
-    'clientId': userId,
+    'userId': userId,
     'deliveryAddress': deliveryAddress,
     'orderProducts': orderProducts,
     'state': 'not_taken',
@@ -137,6 +137,9 @@ Future<void> sendOrder(
     } else {
       print('État : ${response.statusCode}');
       print('Réponse : ${response.body}');
+      print('userId : $userId');
+      print('orderProducts : $orderProducts');
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erreur lors de l\'envoi de la commande')),
       );
@@ -144,7 +147,8 @@ Future<void> sendOrder(
   } catch (e) {
     print('Exception: $e');
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Erreur lors de l\'envoi de la commande: $e')),
+      SnackBar(
+          content: Text('Enorme erreur lors de l\'envoi de la commande: $e')),
     );
   }
 }

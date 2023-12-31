@@ -17,7 +17,7 @@ class _SignUpFormState extends State<SignUpForm> {
   final _confirmPasswordController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  String _selectedRole = "client"; // Valeur par défaut pour le rôle
+  String _selectedRole = "client";
   bool _isLoading = false;
 
   @override
@@ -47,7 +47,7 @@ class _SignUpFormState extends State<SignUpForm> {
       var result = await authService.register(
         _emailController.text,
         _passwordController.text,
-        _selectedRole, // Assurez-vous que cette valeur est une des valeurs acceptées
+        _selectedRole,
         _firstNameController.text,
         _lastNameController.text,
       );
@@ -82,37 +82,30 @@ class _SignUpFormState extends State<SignUpForm> {
     return Form(
       child: Column(
         children: [
-          // Champ Prénom
           Padding(
             padding: EdgeInsets.symmetric(vertical: defaultPadding),
             child: TextFormField(
               controller: _firstNameController,
               decoration: InputDecoration(
                 hintText: "Prénom",
-                // ... autres propriétés
               ),
             ),
           ),
-          // Champ Nom de famille
           Padding(
             padding: EdgeInsets.symmetric(vertical: defaultPadding),
             child: TextFormField(
               controller: _lastNameController,
               decoration: InputDecoration(
                 hintText: "Nom de famille",
-                // ... autres propriétés
               ),
             ),
           ),
-          // Champ Email
           TextFormField(
             controller: _emailController,
             decoration: InputDecoration(
               hintText: "Email",
-              // ... autres propriétés
             ),
           ),
-          // Champ Mot de passe
           Padding(
             padding: EdgeInsets.symmetric(vertical: defaultPadding),
             child: TextFormField(
@@ -120,11 +113,9 @@ class _SignUpFormState extends State<SignUpForm> {
               obscureText: true,
               decoration: InputDecoration(
                 hintText: "Mot de passe",
-                // ... autres propriétés
               ),
             ),
           ),
-          // Champ Confirmer mot de passe
           Padding(
             padding: EdgeInsets.symmetric(vertical: defaultPadding),
             child: TextFormField(
@@ -132,11 +123,9 @@ class _SignUpFormState extends State<SignUpForm> {
               obscureText: true,
               decoration: InputDecoration(
                 hintText: "Confirmer mot de passe",
-                // ... autres propriétés
               ),
             ),
           ),
-          // Sélecteur de rôle
           DropdownButton<String>(
             value: _selectedRole,
             onChanged: (String? newValue) {
@@ -152,8 +141,6 @@ class _SignUpFormState extends State<SignUpForm> {
               );
             }).toList(),
           ),
-
-          // Bouton S'Inscrire
           ElevatedButton(
             onPressed: _isLoading ? null : _register,
             child: _isLoading
@@ -162,7 +149,6 @@ class _SignUpFormState extends State<SignUpForm> {
                   )
                 : Text("S'Inscrire".toUpperCase()),
           ),
-          // Lien vers l'écran de connexion
           AlreadyHaveAnAccountCheck(
             login: false,
             press: () {

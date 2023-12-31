@@ -10,4 +10,9 @@ export class OrdersController {
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
   }
+
+  @Get('/user/:userId')
+  async findAllByUser(@Param('userId') userId: string) {
+    return this.ordersService.findAllByUser(userId);
+  }
 }

@@ -5,7 +5,9 @@ import 'package:ovite/src/shared/cart.dart';
 import 'package:provider/provider.dart';
 import 'package:ovite/src/shared/user_session.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
