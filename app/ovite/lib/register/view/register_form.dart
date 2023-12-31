@@ -97,7 +97,7 @@ class _RegisterFormState extends State<RegisterForm> {
             keyboardType: TextInputType.name,
             textInputAction: TextInputAction.next,
             decoration: const InputDecoration(
-              hintText: "LastName",
+              hintText: "Nom",
               prefixIcon: Padding(
                 padding: EdgeInsets.all(defaultPadding),
                 child: Icon(Icons.person_outline),

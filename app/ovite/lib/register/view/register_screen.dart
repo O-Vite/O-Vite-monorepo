@@ -72,13 +72,16 @@ class MobileRegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 1.4,
+        height: MediaQuery.of(context).size.height,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            SvgPicture.asset("assets/icons/logo.svg"),
+            Expanded(
+              flex: 1,
+                child: SvgPicture.asset("assets/icons/logo.svg")
+            ),
             const Expanded(
-              flex: 2,
+              flex: 7,
               child: Padding(
                 padding: EdgeInsets.all(8.0),
                 child: RegisterForm(),
