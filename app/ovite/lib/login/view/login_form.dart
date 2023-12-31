@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
+import 'package:ovite/register/register.dart';
 import 'package:ovite/shared/constants/constants.dart';
 import 'package:ovite/shared/utils/validator.dart';
 import 'package:ovite/shared/widgets/already_have_an_account_check.dart';
@@ -113,12 +114,12 @@ class _LoginFormState extends State<LoginForm> {
               const SizedBox(height: defaultPadding),
               AlreadyHaveAnAccountCheck(
                 press: () {
-                  /*Navigator.push(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
-                      //builder: (context) { return const SignUpScreen();},
+                      builder: (context) { return const RegisterScreen();},
                     ),
-                  );*/
+                  );
                 },
               ),
             ],

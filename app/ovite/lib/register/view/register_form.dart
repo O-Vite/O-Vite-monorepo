@@ -165,21 +165,21 @@ class _RegisterFormState extends State<RegisterForm> {
           const SizedBox(height: defaultPadding / 2),
           ElevatedButton(
             onPressed: () {},
-            child: Text("S'Inscrire".toUpperCase()),
+            child: Text("S'inscrire".toUpperCase()),
           ),
           const SizedBox(height: defaultPadding),
           AlreadyHaveAnAccountCheck(
             login: false,
             press: () {
               LoginScreen.route();
-              /*Navigator.push(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
                     return const LoginScreen();
                   },
                 ),
-              );*/
+              );
             },
           ),
         ],

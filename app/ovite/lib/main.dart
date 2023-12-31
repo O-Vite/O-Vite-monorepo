@@ -46,12 +46,12 @@ class MyHomePage extends StatelessWidget {
       builder: (context, child) {
         return BlocProvider(
           create: (context) => AuthBloc()..add(AuthCheckRequested()),
-          child: const RegisterScreen(),
-          /*child: BlocListener<AuthBloc, AuthState>(
+          //child: const RegisterScreen(),
+          child: BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               switch (state.status) {
                 case AuthStatus.authenticated:
-                  log("authenticated");
+                  //log("authenticated");
                   _navigator.pushAndRemoveUntil<void>(
                     DeliveryHomeScreen.route(),
                         (route) => false,
@@ -60,7 +60,7 @@ class MyHomePage extends StatelessWidget {
                 case AuthStatus.unauthenticated:
                 case AuthStatus.unknown:
                   final status = state.status;
-                  log("unauthenticated or Unknown : $status");
+                  //log("unauthenticated or Unknown : $status");
                   _navigator.pushAndRemoveUntil<void>(
                     LoginScreen.route(),
                         (route) => false,
@@ -69,7 +69,7 @@ class MyHomePage extends StatelessWidget {
               }
             },
             child: child,
-          )*/
+          )
         );
       },
       onGenerateRoute: (_) => SplashPage.route(),
