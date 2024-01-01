@@ -141,16 +141,10 @@ class _HistoriqueCommandesWidgetState extends State<HistoriqueCommandesWidget> {
       'Authorization': 'Bearer ${UserSession.jwtToken}',
     });
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
     if (response.statusCode == 200) {
-      print('Response body: ${response.body}');
       List<dynamic> ordersJson = json.decode(response.body);
-      print('Orders: $ordersJson');
       return ordersJson.map((json) => Order.fromJson(json)).toList();
     } else {
-      print('Failed to load orders. Status code: ${response.statusCode}');
-      print('Response body: ${response.body}');
       throw Exception('Failed to load orders');
     }
   }
