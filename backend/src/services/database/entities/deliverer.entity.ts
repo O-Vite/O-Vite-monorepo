@@ -12,4 +12,7 @@ export class DelivererEntity extends BaseEntityRobusto {
 
   @OneToMany(() => OrderEntity, (order) => order.deliverer)
   orders!: OrderEntity[];
+
+  @Column('text')
+  kbisNumber!: string;
 }

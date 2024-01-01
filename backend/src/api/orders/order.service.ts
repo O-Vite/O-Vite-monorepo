@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OrderEntity } from '../../services/database/entities/order.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { OrderState } from '../../services/database/entities/order.entity';
 
 @Injectable()
 export class OrdersService {
@@ -19,6 +20,13 @@ export class OrdersService {
   async findAllByUser(userId: string) {
     return this.ordersRepository.find({
       where: { userId: userId },
+      relations: ['orderProducts', 'orderProducts.product'],
+    });
+  }
+
+  async findAllAvailable() {
+    return this.ordersRepository.find({
+      where: { state: OrderState.NOT_TAKEN },
       relations: ['orderProducts', 'orderProducts.product'],
     });
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'course_details_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:ovite/src/shared/user_session.dart';
 import 'package:ovite/src/features/client/models/order.dart';
 
 class GestionDesCoursesPage extends StatefulWidget {
@@ -10,20 +10,41 @@ class GestionDesCoursesPage extends StatefulWidget {
 }
 
 class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
-  Future<List<Order>> fetchCourses() async {
-    var url = Uri.parse('localhost:3000/orders');
-    var response = await http.get(url);
+  Future<List<Order>> fetchAvailableOrders() async {
+    var url = Uri.parse('http://localhost:3000/orders/available');
+    var response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${UserSession.jwtToken}',
+    });
+
     if (response.statusCode == 200) {
-      List<dynamic> body = jsonDecode(response.body);
-      List<Order> courses =
-          body.map((dynamic item) => Order.fromJson(item)).toList();
-      return courses;
+      List<dynamic> ordersJson = json.decode(response.body);
+      return ordersJson.map((json) => Order.fromJson(json)).toList();
     } else {
-      throw Exception('Impossible de charger les courses');
+      throw Exception('Failed to load available orders');
     }
   }
 
-  void acceptCourse(String courseId) {}
+  void acceptCourse(String courseId) async {
+    var url = Uri.parse(
+        'http://localhost:3000/orders/accept/$courseId'); // Remplacez par l'URL appropriée de votre API
+    var response = await http.post(url, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${UserSession.jwtToken}',
+    });
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Course acceptée avec succès')),
+      );
+      setState(() {});
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Erreur lors de l'acceptation de la course")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +52,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
         title: Text('Gestion des Courses'),
       ),
       body: FutureBuilder<List<Order>>(
-        future: fetchCourses(),
+        future: fetchAvailableOrders(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
@@ -43,8 +64,9 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
               itemBuilder: (context, index) {
                 Order order = snapshot.data![index];
                 return ListTile(
-                  title: Text('Commande ${order.id}'),
-                  subtitle: Text('Détails: ${order.details}'),
+                  title: Text('Numéro de commande ${order.id}'),
+                  subtitle:
+                      Text('Adresse de livraison : ${order.deliveryAddress}'),
                   onTap: () => acceptCourse(order.id),
                 );
               },
@@ -54,20 +76,6 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
           }
         },
       ),
-    );
-  }
-}
-
-class Order {
-  final String id;
-  final String details;
-
-  Order({required this.id, required this.details});
-
-  factory Order.fromJson(Map<String, dynamic> json) {
-    return Order(
-      id: json['id'],
-      details: json['details'],
     );
   }
 }

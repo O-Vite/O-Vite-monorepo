@@ -31,7 +31,6 @@ class Product {
   }
 }
 
-// Fonction pour récupérer les produits depuis l'API
 Future<List<Product>> fetchProducts() async {
   final response = await http.get(Uri.parse('http://localhost:3000/products'));
 
@@ -39,11 +38,10 @@ Future<List<Product>> fetchProducts() async {
     List<dynamic> productsJson = json.decode(response.body);
     return productsJson.map((json) => Product.fromJson(json)).toList();
   } else {
-    throw Exception('Failed to load products');
+    throw Exception('Echec du chargement des produits');
   }
 }
 
-// Page principale des produits
 class ClientHomePageContent extends StatefulWidget {
   @override
   _ClientHomePageContentState createState() => _ClientHomePageContentState();

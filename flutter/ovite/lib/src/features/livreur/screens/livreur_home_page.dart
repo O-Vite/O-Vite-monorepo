@@ -1,16 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:ovite/src/shared/user_session.dart';
 import 'package:ovite/src/features/auth/login/login_page.dart';
-import 'package:ovite/src/shared/components/livreur_components/bar_chart_component.dart';
-import 'package:ovite/src/shared/components/livreur_components/pie_chart_component.dart';
 import 'package:ovite/src/features/livreur/screens/gestion_courses_home_page.dart';
+import 'package:ovite/src/features/livreur/screens/dashboard.dart';
 
-class LivreurHomePage extends StatelessWidget {
+class LivreurHomePage extends StatefulWidget {
+  @override
+  _LivreurHomePageState createState() => _LivreurHomePageState();
+}
+
+class _LivreurHomePageState extends State<LivreurHomePage> {
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = UserSession.currentTabIndex ?? 0;
+  }
+
+  final List<Widget> _pages = [
+    LivreurDashboard(),
+    GestionDesCoursesPage(),
+  ];
+
+  void onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    UserSession.setTabIndex(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Page d\'Accueil Livreur'),
+        title: Text('Livreur Dashboard'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -31,36 +55,41 @@ class LivreurHomePage extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.dashboard),
               title: Text('Dashboard'),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _currentIndex = 0;
+                });
+              },
             ),
             ListTile(
-              leading: Icon(Icons.list),
+              leading: Icon(Icons.schedule), // or Icons.assignment
               title: Text('Gestion des Courses'),
               onTap: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => GestionDesCoursesPage()),
-                );
+                setState(() {
+                  _currentIndex = 1;
+                });
               },
             ),
             ListTile(
               leading: Icon(Icons.history),
               title: Text('Historique des Courses'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.report_problem),
-              title: Text('Système de Réclamation'),
               onTap: () {
-                // Naviguer vers Système de Réclamation
+                Navigator.of(context).pop();
+                setState(() {
+                  _currentIndex = 2;
+                });
               },
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Paramètres'),
+              leading: Icon(Icons.report_problem), // or Icons.feedback
+              title: Text('Système de Réclamation'),
               onTap: () {
-                // Naviguer vers Paramètres
+                Navigator.of(context).pop();
+                setState(() {
+                  _currentIndex = 3;
+                });
               },
             ),
             ListTile(
@@ -76,10 +105,24 @@ class LivreurHomePage extends StatelessWidget {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [],
-        ),
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: onTabTapped,
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard), label: 'Dashboard'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.schedule), // or Icons.assignment
+              label: 'Gestion des Courses'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.history), label: 'Historique des Courses'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.report_problem), // or Icons.feedback
+              label: 'Système de Réclamation'),
+        ],
       ),
     );
   }
