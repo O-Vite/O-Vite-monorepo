@@ -108,10 +108,10 @@ Future<void> sendOrder(
     Cart cart, String deliveryAddress, BuildContext context) async {
   var userId = UserSession.userId;
   var orderProducts = cart.items.values.map((cartItem) {
-    print('Produit ID sdsfsdf : ${cartItem.id}');
     return {
       'productId': cartItem.id,
       'quantity': cartItem.quantity,
+      'price': cartItem.price,
     };
   }).toList();
 

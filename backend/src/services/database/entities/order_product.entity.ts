@@ -16,6 +16,9 @@ export class OrderProductEntity {
   @Column('int')
   quantity!: number;
 
+  @Column('float')
+  price!: number;
+
   @ManyToOne(() => OrderEntity, (order) => order.orderProducts)
   order!: OrderEntity;
 
