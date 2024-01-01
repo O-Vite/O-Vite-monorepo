@@ -16,15 +16,10 @@ export class OrdersService {
     await this.ordersRepository.save(order);
     return order;
   }
-
   async findAllByUser(userId: string) {
     return this.ordersRepository.find({
-      where: { client: { id: userId } },
-    });
-  }
-  async findByUserId(userId: string): Promise<OrderEntity[]> {
-    return this.ordersRepository.find({
-      where: { client: { id: userId } },
+      where: { userId: userId },
+      relations: ['orderProducts', 'orderProducts.product'],
     });
   }
 }

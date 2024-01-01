@@ -3,6 +3,7 @@ import 'package:ovite/src/features/client/models/order.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:ovite/src/shared/user_session.dart';
+import 'package:ovite/src/features/client/models/order.dart';
 
 void main() {
   runApp(MyApp());
@@ -127,6 +128,11 @@ class HistoriqueCommandesWidget extends StatefulWidget {
 }
 
 class _HistoriqueCommandesWidgetState extends State<HistoriqueCommandesWidget> {
+  double getTotalPrice(List<OrderProduct> products) {
+    return products.fold(
+        0, (total, current) => total + (current.price * current.quantity));
+  }
+
   Future<List<Order>> fetchOrders() async {
     var url =
         Uri.parse('http://localhost:3000/orders/user/${UserSession.userId}');
@@ -157,16 +163,43 @@ class _HistoriqueCommandesWidgetState extends State<HistoriqueCommandesWidget> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Text("Error: ${snapshot.error}");
+          return Text("Erreur: ${snapshot.error}");
         } else if (snapshot.hasData) {
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               Order order = snapshot.data![index];
-              return ListTile(
-                title: Text('ID de la Commande: ${order.id}'),
-                // Vous pouvez supprimer ou commenter la ligne suivante si vous ne voulez pas afficher l'état
-                // subtitle: Text('État: ${order.state}'),
+              double totalPrice = getTotalPrice(order.orderProducts);
+
+              return Card(
+                elevation: 4,
+                margin: EdgeInsets.all(8),
+                child: ExpansionTile(
+                  leading: Icon(Icons.receipt, color: Colors.blue),
+                  title: Text('Commande ${order.id}',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.blue)),
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              'Adresse de livraison : ${order.deliveryAddress}',
+                              style: TextStyle(fontSize: 16)),
+                          Text('État : ${order.state}',
+                              style: TextStyle(fontSize: 16)),
+                          Text('Prix total : ${totalPrice.toStringAsFixed(2)}€',
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.redAccent)),
+                          // Autres informations
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           );
