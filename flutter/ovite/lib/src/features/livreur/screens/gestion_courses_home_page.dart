@@ -1,43 +1,73 @@
 import 'package:flutter/material.dart';
-import 'course_details_page.dart'; // Assurez-vous que le chemin est correct
+import 'course_details_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:ovite/src/features/client/models/order.dart';
 
-class GestionDesCoursesPage extends StatelessWidget {
+class GestionDesCoursesPage extends StatefulWidget {
+  @override
+  _GestionDesCoursesPageState createState() => _GestionDesCoursesPageState();
+}
+
+class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
+  Future<List<Order>> fetchCourses() async {
+    var url = Uri.parse('localhost:3000/orders');
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      List<dynamic> body = jsonDecode(response.body);
+      List<Order> courses =
+          body.map((dynamic item) => Order.fromJson(item)).toList();
+      return courses;
+    } else {
+      throw Exception('Impossible de charger les courses');
+    }
+  }
+
+  void acceptCourse(String courseId) {}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Gestion des Courses'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemCount: 3,
-          itemBuilder: (context, index) {
-            String courseDetails = "Détails de la Course ${index + 1}";
-            return Card(
-              elevation: 4,
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.blue,
-                  child: Text('${index + 1}',
-                      style: TextStyle(color: Colors.white)),
-                ),
-                title: Text('Course ${index + 1}'),
-                subtitle: Text("Cliquez pour plus de détails"),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          CourseDetailsPage(courseDetails: courseDetails),
-                    ),
-                  );
-                },
-              ),
+      body: FutureBuilder<List<Order>>(
+        future: fetchCourses(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Erreur: ${snapshot.error}');
+          } else if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                Order order = snapshot.data![index];
+                return ListTile(
+                  title: Text('Commande ${order.id}'),
+                  subtitle: Text('Détails: ${order.details}'),
+                  onTap: () => acceptCourse(order.id),
+                );
+              },
             );
-          },
-        ),
+          } else {
+            return Text('Aucune course disponible.');
+          }
+        },
       ),
+    );
+  }
+}
+
+class Order {
+  final String id;
+  final String details;
+
+  Order({required this.id, required this.details});
+
+  factory Order.fromJson(Map<String, dynamic> json) {
+    return Order(
+      id: json['id'],
+      details: json['details'],
     );
   }
 }

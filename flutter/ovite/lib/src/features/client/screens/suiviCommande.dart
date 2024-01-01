@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:ovite/src/shared/user_session.dart';
 import 'package:ovite/src/features/client/models/order.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,7 +34,7 @@ class CommandesPage extends StatelessWidget {
           title: Text('Suivi des Commandes'),
           bottom: TabBar(
             tabs: [
-              Tab(text: 'Suivi'),
+              Tab(text: 'Suivi de Commande'),
               Tab(text: 'Historique'),
             ],
           ),
@@ -57,33 +59,44 @@ class _SuiviCommandesWidgetState extends State<SuiviCommandesWidget> {
   int _currentStep = 0;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
-              Text('Chargement'),
-              Text('Départ'),
-              Text('Livré'),
+    return Column(
+      children: <Widget>[
+        StepProgressIndicator(
+          totalSteps: 3,
+          currentStep: _currentStep,
+          selectedColor: Colors.blue,
+          unselectedColor: Colors.grey[300]!,
+        ),
+        SizedBox(height: 20),
+        Expanded(
+          child: FlutterMap(
+            options: MapOptions(
+              center: LatLng(48.8566, 2.3522),
+              zoom: 13.0,
+            ),
+            layers: [
+              TileLayerOptions(
+                urlTemplate:
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                subdomains: ['a', 'b', 'c'],
+              ),
+              MarkerLayerOptions(
+                markers: [
+                  Marker(
+                    width: 80.0,
+                    height: 80.0,
+                    point: LatLng(48.8566, 2.3522),
+                    builder: (ctx) => Container(
+                      child: Icon(Icons.location_on, color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
-          StepProgressIndicator(
-            totalSteps: 3,
-            currentStep: _currentStep,
-            selectedColor: Colors.blue,
-            unselectedColor: Colors.grey[300]!,
-          ),
-          SizedBox(height: 20),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
