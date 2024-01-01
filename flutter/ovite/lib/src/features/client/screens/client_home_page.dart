@@ -124,7 +124,6 @@ class _ClientMainPageState extends State<ClientMainPage> {
           BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Commande'),
           BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart), label: 'Panier'),
-          // Ajoutez d'autres items ici si nécessaire
         ],
       ),
     );

@@ -108,6 +108,7 @@ Future<void> sendOrder(
     Cart cart, String deliveryAddress, BuildContext context) async {
   var userId = UserSession.userId;
   var orderProducts = cart.items.values.map((cartItem) {
+    print('Produit ID sdsfsdf : ${cartItem.id}');
     return {
       'productId': cartItem.id,
       'quantity': cartItem.quantity,
@@ -135,11 +136,6 @@ Future<void> sendOrder(
       );
       cart.clear();
     } else {
-      print('État : ${response.statusCode}');
-      print('Réponse : ${response.body}');
-      print('userId : $userId');
-      print('orderProducts : $orderProducts');
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erreur lors de l\'envoi de la commande')),
       );

@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { Product } from '../../../api/products/product.entity';
 
@@ -13,6 +19,10 @@ export class OrderProductEntity {
   @ManyToOne(() => OrderEntity, (order) => order.orderProducts)
   order!: OrderEntity;
 
+  @Column({ type: 'uuid' })
+  productId!: string;
+
   @ManyToOne(() => Product, (product) => product.orderProducts)
+  @JoinColumn({ name: 'productId' })
   product!: Product;
 }
