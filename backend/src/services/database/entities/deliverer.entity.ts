@@ -1,6 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
+import { UserEntity } from './user.entity';
 
 @Entity('deliverer')
 export class DelivererEntity extends BaseEntityRobusto {
@@ -14,5 +22,9 @@ export class DelivererEntity extends BaseEntityRobusto {
   orders!: OrderEntity[];
 
   @Column('text')
-  kbisNumber!: string;
+  kbisNumber?: string | null;
+
+  @ManyToOne(() => UserEntity, (user) => user.deliverers)
+  @JoinColumn({ name: 'userId' })
+  user!: UserEntity;
 }

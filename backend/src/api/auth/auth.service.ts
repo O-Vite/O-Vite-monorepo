@@ -21,7 +21,9 @@ export type SelectLoginDto = Pick<
 export type InsertRegisterDto = Pick<
   UserEntity,
   'email' | 'password' | 'role' | 'firstName' | 'lastName'
->;
+> & {
+  kbisNumber?: string;
+};
 
 @Injectable()
 export class AuthService {

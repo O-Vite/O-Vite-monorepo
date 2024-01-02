@@ -3,8 +3,9 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { ComplainEntity } from './complain.entity';
 import { MessageEntity } from './message.entity';
 import { OrderEntity } from './order.entity';
+import { DelivererEntity } from './deliverer.entity';
 
-enum UserRole {
+export enum UserRole {
   ADMIN = 'admin',
   CLIENT = 'client',
   DELIVERER = 'deliverer',
@@ -62,4 +63,7 @@ export class UserEntity extends BaseEntityRobusto {
 
   @OneToMany(() => OrderEntity, (order) => order.user)
   orders?: OrderEntity[];
+
+  @OneToMany(() => DelivererEntity, (deliverer) => deliverer.user)
+  deliverers?: DelivererEntity[];
 }

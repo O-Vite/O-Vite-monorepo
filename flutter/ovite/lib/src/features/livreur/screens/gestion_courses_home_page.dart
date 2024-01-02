@@ -26,8 +26,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
   }
 
   void acceptCourse(String courseId) async {
-    var url = Uri.parse(
-        'http://localhost:3000/orders/accept/$courseId'); // Remplacez par l'URL appropriée de votre API
+    var url = Uri.parse('http://localhost:3000/orders/accept/$courseId');
     var response = await http.post(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${UserSession.jwtToken}',

@@ -4,8 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:ovite/src/shared/user_session.dart';
 import 'package:ovite/src/features/client/models/order.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
   runApp(MyApp());
@@ -70,30 +69,18 @@ class _SuiviCommandesWidgetState extends State<SuiviCommandesWidget> {
         ),
         SizedBox(height: 20),
         Expanded(
-          child: FlutterMap(
-            options: MapOptions(
-              center: LatLng(48.8566, 2.3522),
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: LatLng(48.8566, 2.3522), // Coordonnées de Paris
               zoom: 13.0,
             ),
-            layers: [
-              TileLayerOptions(
-                urlTemplate:
-                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                subdomains: ['a', 'b', 'c'],
+            markers: {
+              Marker(
+                markerId: MarkerId('someId'),
+                position: LatLng(48.8566, 2.3522),
+                infoWindow: InfoWindow(title: 'Mon Emplacement'),
               ),
-              MarkerLayerOptions(
-                markers: [
-                  Marker(
-                    width: 80.0,
-                    height: 80.0,
-                    point: LatLng(48.8566, 2.3522),
-                    builder: (ctx) => Container(
-                      child: Icon(Icons.location_on, color: Colors.red),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            },
           ),
         ),
       ],

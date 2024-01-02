@@ -12,13 +12,28 @@ class SignUpForm extends StatefulWidget {
 }
 
 class _SignUpFormState extends State<SignUpForm> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _kbisNumberController = TextEditingController();
   String _selectedRole = "client";
   bool _isLoading = false;
+
+  bool isEmailValid(String email) {
+    String pattern = r'\w+@\w+\.\w+';
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(email);
+  }
+
+  bool isPasswordValid(String password) {
+    String pattern =
+        r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'; // Au moins 8 caractères, une lettre et un chiffre
+    RegExp regex = RegExp(pattern);
+    return regex.hasMatch(password);
+  }
 
   @override
   void dispose() {
@@ -27,10 +42,15 @@ class _SignUpFormState extends State<SignUpForm> {
     _confirmPasswordController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _kbisNumberController.dispose();
     super.dispose();
   }
 
   Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Les mots de passe ne correspondent pas')),
@@ -50,6 +70,7 @@ class _SignUpFormState extends State<SignUpForm> {
         _selectedRole,
         _firstNameController.text,
         _lastNameController.text,
+        _kbisNumberController.text,
       );
 
       if (result != null) {
@@ -80,6 +101,7 @@ class _SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: Column(
         children: [
           Padding(
@@ -105,6 +127,12 @@ class _SignUpFormState extends State<SignUpForm> {
             decoration: InputDecoration(
               hintText: "Email",
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty || !isEmailValid(value)) {
+                return 'Veuillez entrer une adresse email valide';
+              }
+              return null;
+            },
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: defaultPadding),
@@ -114,6 +142,12 @@ class _SignUpFormState extends State<SignUpForm> {
               decoration: InputDecoration(
                 hintText: "Mot de passe",
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty || !isPasswordValid(value)) {
+                  return 'Le mot de passe doit contenir au moins 8 caractères, dont une lettre et un chiffre';
+                }
+                return null;
+              },
             ),
           ),
           Padding(
@@ -124,6 +158,12 @@ class _SignUpFormState extends State<SignUpForm> {
               decoration: InputDecoration(
                 hintText: "Confirmer mot de passe",
               ),
+              validator: (value) {
+                if (value != _passwordController.text) {
+                  return 'Les mots de passe ne correspondent pas';
+                }
+                return null;
+              },
             ),
           ),
           DropdownButton<String>(
@@ -141,6 +181,16 @@ class _SignUpFormState extends State<SignUpForm> {
               );
             }).toList(),
           ),
+          if (_selectedRole == 'deliverer')
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: defaultPadding),
+              child: TextFormField(
+                controller: _kbisNumberController,
+                decoration: InputDecoration(
+                  hintText: "Numéro Kbis",
+                ),
+              ),
+            ),
           ElevatedButton(
             onPressed: _isLoading ? null : _register,
             child: _isLoading

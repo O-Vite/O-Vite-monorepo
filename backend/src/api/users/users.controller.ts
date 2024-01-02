@@ -6,12 +6,16 @@ import typia, { assert, createAssert, createAssertEquals } from 'typia';
 import { TypedParam, TypedRoute } from '@nestia/core';
 import { Except } from 'type-fest';
 import { RobustoHelper } from 'packages/robusto-crud/helpers';
+import { DelivererService } from '../delivers/deliver.service';
+import { UserRole } from 'src/services/database/entities/user.entity';
 
 type UserSelectDto = Except<
   UserEntity,
   'complains' | 'password' | 'role' | 'messages'
 >;
-type UserCreateDto = Pick<UserEntity, 'email' | 'password' | 'role'>;
+type UserCreateDto = Pick<UserEntity, 'email' | 'password' | 'role'> & {
+  kbisNumber?: string;
+};
 type UserUpdateDto = Partial<UserCreateDto> & { id: TId };
 
 type RemoveKeysWithValueObjectOrArrayObject<T extends object> = {
@@ -27,23 +31,46 @@ type RESS = RemoveKeysWithValueObjectOrArrayObject<UserEntity>;
 
 @Controller('users')
 export class UsersController {
-  private readonly crudator = robustoCrud({
-    entityDB: UserEntity,
-    selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
-    assertSelectDto: createAssertEquals<UserSelectDto>(),
-    assertSelectDtoArray: createAssertEquals<UserSelectDto[]>(),
-    assertInsertDto: createAssertEquals<UserCreateDto>(),
-    assertUpdateDto: createAssertEquals<UserUpdateDto>(),
-  });
+  private readonly crudator;
+
+  constructor(private readonly delivererService: DelivererService) {
+    this.crudator = robustoCrud({
+      entityDB: UserEntity,
+      selectKeys: [...typia.misc.literals<keyof UserSelectDto>()],
+      assertSelectDto: createAssertEquals<UserSelectDto>(),
+      assertSelectDtoArray: createAssertEquals<UserSelectDto[]>(),
+      assertInsertDto: createAssertEquals<UserCreateDto>(),
+      assertUpdateDto: createAssertEquals<UserUpdateDto>(),
+    });
+  }
 
   @Get()
   async getAll(): Promise<UserSelectDto[]> {
     return this.crudator.fetchAll();
   }
 
-  @Post()
+  // async create(@Body() data: UserCreateDto) {
+  //   const newUser = await this.crudator.insert(data);
+  //   if (data.role === UserRole.DELIVERER) {
+  //     await this.delivererService.createForUser(newUser.id);
+  //   }
+  //   return newUser;
+  // }
+
   async create(@Body() data: UserCreateDto) {
-    return this.crudator.insert(data);
+    try {
+      const newUser = await this.crudator.insert(data);
+      if (data.role === UserRole.DELIVERER) {
+        await this.delivererService.createForUser(newUser.id, data.kbisNumber);
+      }
+      return newUser;
+    } catch (error) {
+      console.error(
+        "Erreur lors de la création de l'utilisateur et/ou du livreur:",
+        error,
+      );
+      throw error;
+    }
   }
 
   @TypedRoute.Get(':id')
