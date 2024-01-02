@@ -11,21 +11,22 @@ import { Server, Socket } from 'socket.io';
 export class LocationGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
-  @WebSocketServer()
-  server!: Server;
+  @WebSocketServer() server!: Server;
+  clients: Socket[] = [];
 
-  handleConnection(client: Socket, ...args: any[]) {
-    // Logic when a client connects
+  handleConnection(client: Socket) {
+    this.clients.push(client);
   }
 
   handleDisconnect(client: Socket) {
-    // Logic when a client disconnects
+    this.clients = this.clients.filter((c) => c.id !== client.id);
   }
 
-  @SubscribeMessage('updateLocation')
-  handleUpdateLocation(client: Socket, data: any): void {
-    // Handle the update location message from the client
-    // You can broadcast this message to all clients or handle it as needed
-    this.server.emit('locationUpdated', data);
+  @SubscribeMessage('sendLocation')
+  receiveLocation(
+    client: Socket,
+    payload: { lat: number; lng: number; orderId: string },
+  ) {
+    this.server.to(payload.orderId).emit('newLocation', payload);
   }
 }
