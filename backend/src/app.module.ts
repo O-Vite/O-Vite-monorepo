@@ -20,6 +20,7 @@ import { ClientsModule } from './api/clients/clients.module';
 // import { RolesGuard } from './services/guard/role/role.guard';
 import { ChatsModule } from './api/chats/chats.module';
 import { BrandsModule } from './api/brands/brands.module';
+import { LocationGateway } from './realtime/location/location.gateway';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { BrandsModule } from './api/brands/brands.module';
     BrandsModule,
   ],
   controllers: [],
+  providers: [LocationGateway],
   // providers: [
   //   {
   //     provide: APP_GUARD,
