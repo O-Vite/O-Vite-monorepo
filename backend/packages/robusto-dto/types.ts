@@ -1,8 +1,4 @@
-import {
-  BaseEntityRobusto,
-  TId,
-  TOmitBaseEntity,
-} from 'packages/robusto-crud/base-entity';
+import { TId } from 'packages/robusto-crud/base-entity';
 import { Except } from 'type-fest';
 import { RemoveNever } from 'utils/types';
 
@@ -12,20 +8,5 @@ export type EntityWithoutRelations<T extends object> = RemoveNever<{
 
 export type ExceptWithoutRelations<
   T extends object,
-  Excepted extends keyof EntityWithoutRelations<T> = never,
+  Excepted extends keyof EntityWithoutRelations<T>,
 > = Except<EntityWithoutRelations<T>, Excepted>;
-
-export type SelectDto<
-  T extends BaseEntityRobusto,
-  Excepted extends keyof EntityWithoutRelations<T> = never,
-> = ExceptWithoutRelations<T, Excepted>;
-
-export type InsertDto<
-  T extends BaseEntityRobusto,
-  Excepted extends keyof EntityWithoutRelations<TOmitBaseEntity<T>> = never,
-> = ExceptWithoutRelations<TOmitBaseEntity<T>, Excepted>;
-
-export type UpdateDto<
-  T extends BaseEntityRobusto,
-  Excepted extends keyof EntityWithoutRelations<TOmitBaseEntity<T>> = never,
-> = ExceptWithoutRelations<TOmitBaseEntity<T>, Excepted>;

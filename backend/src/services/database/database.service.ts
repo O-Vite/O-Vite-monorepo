@@ -16,13 +16,9 @@ export const dataSource = new DataSource({
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DATABASE,
   synchronize: process.env.NODE_ENV !== 'production',
-  logging: process.env.NODE_ENV !== 'production',
   autoLoadEntities: true,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/migrations/*{.ts,.js}'],
-  cli: {
-    migrationsDir: 'src/migrations',
-  },
 } as any);
 
 export const Orm = dataSource.manager;

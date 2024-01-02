@@ -50,7 +50,7 @@ export const useRobustoCrud =
           id,
         );
       },
-      insert: (data: InsertDto) => {
+      insert: (data: InsertDto | InsertDto[]) => {
         return RobustoHelper.insert<Entity, InsertDto, SelectDto>(
           entityManager,
           {
