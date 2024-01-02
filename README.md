@@ -13,3 +13,6 @@ docker-compose up -d
 
 ```
 
+migrate
+npm run migration:create --name=your_migration_name
+
