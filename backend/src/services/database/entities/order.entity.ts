@@ -4,7 +4,7 @@ import { DelivererEntity } from './deliverer.entity';
 import { OrderProductEntity } from './order_product.entity';
 import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
 
-enum OrderState {
+export enum OrderState {
   PAID = 'paid',
   NOT_TAKEN = 'not_taken',
   TAKEN = 'taken',

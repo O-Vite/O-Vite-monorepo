@@ -98,13 +98,12 @@ export namespace RobustoHelper {
       assertInsertDto: ReturnType<typeof createAssertEquals<InsertDto>>;
       preFilterBuilded?: typeof buildWhereArray<Entity> | undefined;
     },
-    data: InsertDto | InsertDto[],
+    data: InsertDto,
   ): Promise<RemoveKeysWithValueObjectOrArrayObject<SelectDto>> => {
     settings.assertInsertDto(data);
-    data = Array.isArray(data) ? data : [data];
-    let res: Entity[] = [];
+    let res: Entity = {} as Entity;
     try {
-      res = await entityManager.save(settings.entityDB, data);
+      res = (await entityManager.save(settings.entityDB, data)) as Entity;
     } catch (e: any) {
       if (e instanceof QueryFailedError) {
         if (
@@ -115,16 +114,12 @@ export namespace RobustoHelper {
       }
       throw e;
     }
-    if (res.length === 0) {
-      throw new Error('No data inserted');
-    }
-    const uniqueRes = res[0];
 
     //TODO: see if relations are showed
 
     // const resSelected = D.selectKeys(res, settings.selectKeys) as SelectDto[];
     //@ts-expect-error
-    const ResWithOnlySelectKeys = D.selectKeys(uniqueRes, settings.selectKeys);
+    const ResWithOnlySelectKeys = D.selectKeys(res, settings.selectKeys);
     //@ts-expect-error
     return settings.assertSelectDto(
       ResWithOnlySelectKeys as RemoveKeysWithValueObjectOrArrayObject<SelectDto>,
