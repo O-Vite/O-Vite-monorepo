@@ -40,6 +40,7 @@ import { BrandsModule } from './api/brands/brands.module';
     BrandsModule,
   ],
   controllers: [],
+  providers: [WebsocketGateway],
   // providers: [
   //   {
   //     provide: APP_GUARD,
