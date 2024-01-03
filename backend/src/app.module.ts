@@ -21,10 +21,12 @@ import { ClientsModule } from './api/clients/clients.module';
 import { ChatsModule } from './api/chats/chats.module';
 import { BrandsModule } from './api/brands/brands.module';
 import { LocationGateway } from './realtime/location/location.gateway';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot('mongodb://localhost/nest'),
     DatabaseModule,
     UsersModule,
     SupportsModule,
