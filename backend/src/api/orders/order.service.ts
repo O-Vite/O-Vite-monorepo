@@ -36,10 +36,34 @@ export class OrdersService {
       where: { id: orderId },
     });
     if (!order) {
-      throw new Error('Order not found');
+      throw new Error('Commande non trouvée !');
     }
     order.state = OrderState.TAKEN;
     await this.ordersRepository.save(order);
     return order;
+  }
+
+  async deliverOrder(orderId: string) {
+    const order = await this.ordersRepository.findOne({
+      where: { id: orderId },
+    });
+    if (!order) {
+      throw new Error("La commande n'a pas été trouvée");
+    }
+    if (order.state !== OrderState.TAKEN) {
+      throw new Error("L'état de la commande n'est pas bon");
+    }
+    order.state = OrderState.DELIVERED;
+    await this.ordersRepository.save(order);
+    return order;
+  }
+
+  async findCurrentOrdersByUser(userId: string) {
+    return this.ordersRepository.find({
+      where: {
+        userId: userId,
+        state: OrderState.TAKEN,
+      },
+    });
   }
 }

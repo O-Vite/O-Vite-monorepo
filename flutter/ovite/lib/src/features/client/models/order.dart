@@ -13,15 +13,17 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     // Transformer les données JSON des produits en une liste d'objets OrderProduct
-    var orderProductsFromJson = (json['orderProducts'] as List)
-        .map((orderProductJson) => OrderProduct.fromJson(orderProductJson))
-        .toList();
+    var orderProductsFromJson = json['orderProducts'] != null
+        ? (json['orderProducts'] as List)
+            .map((orderProductJson) => OrderProduct.fromJson(orderProductJson))
+            .toList()
+        : [];
 
     return Order(
       id: json['id'],
       deliveryAddress: json['deliveryAddress'],
       state: json['state'],
-      orderProducts: orderProductsFromJson,
+      orderProducts: List<OrderProduct>.from(orderProductsFromJson),
     );
   }
 }

@@ -1,5 +1,5 @@
 // eslint-disable-next-line prettier/prettier
-import { Body, Controller, Post, Get, Param, UseGuards, Request} from '@nestjs/common';
+import { Body, Controller, Post, Get, Param, UseGuards, Request, Patch} from '@nestjs/common';
 import { OrdersService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { AuthGuard } from '../../services/guard/auth/auth.guard';
@@ -24,10 +24,25 @@ export class OrdersController {
     return this.ordersService.findAllAvailable();
   }
 
+  // ACCEPTATION DES COMMANDES COTE LIVREUR
   @Post('/accept/:orderId')
   @UseGuards(AuthGuard)
   async acceptOrder(@Param('orderId') orderId: string, @Request() req) {
     const userId = req.user.id;
     return this.ordersService.acceptOrder(orderId, userId);
+  }
+
+  // LIVRAISON DE COMMANDES COTE LIVREUR | LA COMMANDE EST ACCEPTÉE
+  @Patch('/deliver/:orderId')
+  @UseGuards(AuthGuard)
+  async deliverOrder(@Param('orderId') orderId: string) {
+    return this.ordersService.deliverOrder(orderId);
+  }
+
+  // AFFICHER LES COMMANDES COTE CLIENT
+  @Get('/current/:userId')
+  @UseGuards(AuthGuard)
+  async findCurrentOrders(@Param('userId') userId: string) {
+    return this.ordersService.findCurrentOrdersByUser(userId);
   }
 }
