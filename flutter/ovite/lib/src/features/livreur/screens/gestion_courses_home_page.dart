@@ -25,13 +25,41 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
     }
   }
 
+  void _showAcceptConfirmationDialog(String courseId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Accepter la course'),
+          content: Text('Êtes-vous sûr de vouloir accepter cette course ?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Annuler'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text('Accepter'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                acceptCourse(courseId);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void acceptCourse(String courseId) async {
     var url = Uri.parse('http://localhost:3000/orders/accept/$courseId');
-    var response = await http.post(url, headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${UserSession.jwtToken}',
-    });
-
+    var response = await http.post(url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${UserSession.jwtToken}',
+        },
+        body: json.encode({'delivererId': UserSession.userId}));
     if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Course acceptée avec succès')),
@@ -41,6 +69,8 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Erreur lors de l'acceptation de la course")),
       );
+      print('Status code: ${response.statusCode}');
+      print('Response body: ${response.body}');
     }
   }
 
@@ -66,7 +96,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
                   title: Text('Numéro de commande ${order.id}'),
                   subtitle:
                       Text('Adresse de livraison : ${order.deliveryAddress}'),
-                  onTap: () => acceptCourse(order.id),
+                  onTap: () => _showAcceptConfirmationDialog(order.id),
                 );
               },
             );

@@ -31,16 +31,15 @@ export class OrdersService {
     });
   }
 
-  // async acceptOrder(orderId: string, delivererId: string) {
-  //   const order = await this.ordersRepository.findOne({
-  //     where: { id: orderId },
-  //   });
-  //   if (!order) {
-  //     throw new Error('Order not found');
-  //   }
-  //   order.state = 'taken';
-  //   order.delivererId = delivererId;
-  //   await this.ordersRepository.save(order);
-  //   return order;
-  // }
+  async acceptOrder(orderId: string, userId: string) {
+    const order = await this.ordersRepository.findOne({
+      where: { id: orderId },
+    });
+    if (!order) {
+      throw new Error('Order not found');
+    }
+    order.state = OrderState.TAKEN;
+    await this.ordersRepository.save(order);
+    return order;
+  }
 }

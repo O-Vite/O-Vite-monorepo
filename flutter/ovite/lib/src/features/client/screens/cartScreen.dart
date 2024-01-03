@@ -75,6 +75,7 @@ class CartScreen extends StatelessWidget {
   void _showDeliveryAddressModal(BuildContext context, Cart cart) {
     TextEditingController _addressController = TextEditingController();
     List<String> _addressSuggestions = [];
+    final RegExp addressRegex = RegExp(r'^\d+\s+\w+');
 
     showDialog(
       context: context,
@@ -92,16 +93,15 @@ class CartScreen extends StatelessWidget {
                   } else {
                     _addressSuggestions = [];
                   }
-                  // Mettre à jour l'état pour afficher les suggestions
+
                   (context as Element).markNeedsBuild();
                 },
                 decoration: InputDecoration(hintText: 'Entrez votre adresse'),
               ),
               SizedBox(height: 10),
-              // Widget pour afficher les suggestions
               if (_addressSuggestions.isNotEmpty)
                 Container(
-                  height: 100.0, // Ajustez la hauteur selon vos besoins
+                  height: 100.0,
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: _addressSuggestions.length,
@@ -129,6 +129,16 @@ class CartScreen extends StatelessWidget {
             ElevatedButton(
               child: Text('Confirmer'),
               onPressed: () {
+                final enteredAddress = _addressController.text;
+
+                if (!addressRegex.hasMatch(enteredAddress)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(
+                            'Adresse invalide. Veuillez entrer une adresse valide.')),
+                  );
+                  return;
+                }
                 Navigator.of(context).pop();
                 sendOrder(cart, _addressController.text, context);
               },
@@ -188,7 +198,7 @@ Future<void> sendOrder(
       body: orderData,
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Commande envoyée avec succès')),
       );

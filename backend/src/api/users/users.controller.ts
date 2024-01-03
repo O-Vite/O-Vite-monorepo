@@ -15,6 +15,8 @@ type UserSelectDto = Except<
 >;
 type UserCreateDto = Pick<UserEntity, 'email' | 'password' | 'role'> & {
   kbisNumber?: string;
+  name?: string;
+  isDelivererVerified?: boolean;
 };
 type UserUpdateDto = Partial<UserCreateDto> & { id: TId };
 
@@ -60,8 +62,8 @@ export class UsersController {
   async create(@Body() data: UserCreateDto) {
     try {
       const newUser = await this.crudator.insert(data);
-      if (data.role === UserRole.DELIVERER) {
-        await this.delivererService.createForUser(newUser.id, data.kbisNumber);
+      if (data.role === 'deliverer') {
+        console.log('livreur');
       }
       return newUser;
     } catch (error) {

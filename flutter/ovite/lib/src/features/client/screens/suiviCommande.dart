@@ -145,7 +145,7 @@ class _HistoriqueCommandesWidgetState extends State<HistoriqueCommandesWidget> {
       List<dynamic> ordersJson = json.decode(response.body);
       return ordersJson.map((json) => Order.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load orders');
+      throw Exception('Erreur lors du chargeur');
     }
   }
 

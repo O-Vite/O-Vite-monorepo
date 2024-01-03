@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { ClientEntity } from './client.entity';
 import { DelivererEntity } from './deliverer.entity';
@@ -43,6 +44,9 @@ export class OrderEntity extends BaseEntityRobusto {
 
   @ManyToOne(() => ClientEntity, (client) => client.orders)
   client?: ClientEntity;
+
+  @Column({ nullable: true })
+  delivererId?: string;
 
   @ManyToOne(() => DelivererEntity, (deliverer) => deliverer.orders)
   deliverer!: DelivererEntity;

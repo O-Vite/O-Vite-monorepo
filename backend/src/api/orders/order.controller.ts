@@ -1,4 +1,5 @@
-import { Body, Controller, Post, Get, Param, UseGuards } from '@nestjs/common';
+// eslint-disable-next-line prettier/prettier
+import { Body, Controller, Post, Get, Param, UseGuards, Request} from '@nestjs/common';
 import { OrdersService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { AuthGuard } from '../../services/guard/auth/auth.guard';
@@ -23,10 +24,10 @@ export class OrdersController {
     return this.ordersService.findAllAvailable();
   }
 
-  // @Post('/accept/:orderId')
-  // @UseGuards(AuthGuard)
-  // acceptOrder(@Param('orderId') orderId: string, @Req() req: Request) {
-  //   const delivererId = req.user?.userId; // Assurez-vous que l'utilisateur est authentifié et dispose d'un userId
-  //   return this.ordersService.acceptOrder(orderId, delivererId);
-  // }
+  @Post('/accept/:orderId')
+  @UseGuards(AuthGuard)
+  async acceptOrder(@Param('orderId') orderId: string, @Request() req) {
+    const userId = req.user.id;
+    return this.ordersService.acceptOrder(orderId, userId);
+  }
 }
