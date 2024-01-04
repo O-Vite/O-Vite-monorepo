@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:ovite/src/shared/user_session.dart';
 import 'package:ovite/src/features/client/models/order.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GestionDesCoursesPage extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
       List<dynamic> ordersJson = json.decode(response.body);
       return ordersJson.map((json) => Order.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load available orders');
+      throw Exception('Échec du chargement des commandes');
     }
   }
 
@@ -60,7 +61,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
           'Authorization': 'Bearer ${UserSession.jwtToken}',
         },
         body: json.encode({'delivererId': UserSession.userId}));
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Course acceptée avec succès')),
       );
@@ -80,30 +81,47 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
       appBar: AppBar(
         title: Text('Gestion des Courses'),
       ),
-      body: FutureBuilder<List<Order>>(
-        future: fetchAvailableOrders(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('Erreur: ${snapshot.error}');
-          } else if (snapshot.hasData) {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                Order order = snapshot.data![index];
-                return ListTile(
-                  title: Text('Numéro de commande ${order.id}'),
-                  subtitle:
-                      Text('Adresse de livraison : ${order.deliveryAddress}'),
-                  onTap: () => _showAcceptConfirmationDialog(order.id),
-                );
+      body: Column(
+        children: [
+          Expanded(
+            flex: 1, // Ajustez la flexibilité selon vos besoins
+            child: FutureBuilder<List<Order>>(
+              future: fetchAvailableOrders(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Text('Erreur: ${snapshot.error}');
+                } else if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      Order order = snapshot.data![index];
+                      return ListTile(
+                        title: Text('Numéro de commande ${order.id}'),
+                        subtitle: Text(
+                            'Adresse de livraison : ${order.deliveryAddress}'),
+                        onTap: () => _showAcceptConfirmationDialog(order.id),
+                      );
+                    },
+                  );
+                } else {
+                  return Text('Aucune course disponible.');
+                }
               },
-            );
-          } else {
-            return Text('Aucune course disponible.');
-          }
-        },
+            ),
+          ),
+          Expanded(
+            flex: 1, // Ajustez la flexibilité selon vos besoins
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: LatLng(48.8566, 2.3522), // Coordonnées par défaut
+                zoom: 12.0,
+              ),
+              // Vous pouvez ajouter des marqueurs ici si nécessaire
+            ),
+          ),
+        ],
       ),
     );
   }
