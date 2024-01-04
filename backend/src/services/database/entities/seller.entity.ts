@@ -7,7 +7,9 @@ export class SellerEntity extends BaseEntityRobusto {
   @Column('int')
   siret!: number;
 
-  @OneToOne(() => UserEntity)
+  @OneToOne(() => UserEntity, {
+    cascade: true,
+  })
   @JoinColumn()
   user!: UserEntity;
 }

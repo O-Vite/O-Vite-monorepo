@@ -5,7 +5,9 @@ import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
 
 @Entity('client')
 export class ClientEntity extends BaseEntityRobusto {
-  @OneToOne(() => UserEntity)
+  @OneToOne(() => UserEntity, {
+    cascade: true,
+  })
   @JoinColumn()
   user!: UserEntity;
 

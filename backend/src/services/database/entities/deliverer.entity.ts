@@ -11,7 +11,9 @@ export class DelivererEntity extends BaseEntityRobusto {
   @Column('boolean')
   isVerified!: boolean;
 
-  @OneToOne(() => UserEntity)
+  @OneToOne(() => UserEntity, {
+    cascade: true,
+  })
   @JoinColumn()
   user!: UserEntity;
 

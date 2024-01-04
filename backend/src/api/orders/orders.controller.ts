@@ -1,16 +1,25 @@
 import { Body, Controller, Post, Get } from '@nestjs/common';
 import { robustoCrud } from 'src/services/database/database.service';
 import typia, { createAssertEquals } from 'typia';
-import { InsertDto, SelectDto, UpdateDto } from 'packages/robusto-dto/types';
+import {
+  InsertDto,
+  InsertDtoWithRelation,
+  SelectDto,
+  UpdateDto,
+  UpdateDtoWithRelation,
+} from 'packages/robusto-dto/types';
 import { TypedParam, TypedRoute } from '@nestia/core';
 import { TId } from 'packages/robusto-crud/base-entity';
-import { OrderEntity } from 'src/services/database/entities/order.entity';
+import {
+  OrderEntity,
+  OrderState,
+} from 'src/services/database/entities/order.entity';
 
 type SelectOrderDto = SelectDto<OrderEntity>;
 
-type InsertOrderDto = InsertDto<OrderEntity>;
+type InsertOrderDto = InsertDtoWithRelation<OrderEntity>;
 
-type UpdateOrderDto = UpdateDto<OrderEntity>;
+type UpdateOrderDto = UpdateDtoWithRelation<OrderEntity>;
 //
 
 @Controller('orders')
