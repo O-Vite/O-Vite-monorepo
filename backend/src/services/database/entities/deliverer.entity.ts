@@ -8,9 +8,6 @@ export class DelivererEntity extends BaseEntityRobusto {
   @Column('int')
   kbisNumber!: number;
 
-  @Column('boolean')
-  isVerified!: boolean;
-
   @OneToOne(() => UserEntity, {
     cascade: true,
   })
