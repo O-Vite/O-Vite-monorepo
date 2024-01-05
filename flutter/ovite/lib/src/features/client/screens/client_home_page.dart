@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ovite/src/features/client/screens/commande.dart';
-import 'package:ovite/src/features/client/screens/profil.dart';
+import 'package:ovite/src/features/client/screens/profile_page.dart';
 import 'package:ovite/src/features/client/widgets/ClientHomePageContent.dart';
 import 'package:ovite/src/features/client/screens/cartScreen.dart';
 import 'package:ovite/src/shared/user_session.dart';
@@ -27,7 +27,7 @@ class _ClientMainPageState extends State<ClientMainPage> {
 
   final List<Widget> _pages = [
     ClientHomePageContent(),
-    CommandesPage(),
+   // CommandesPage(),
     CartScreen(),
   ];
 
