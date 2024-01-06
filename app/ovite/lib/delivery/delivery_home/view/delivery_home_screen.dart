@@ -19,24 +19,11 @@ class DeliveryHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: const Text('Home'),
-      ),
-      body:  SafeArea(
-          child: Center(
-            child: Row(
-              children: [
-                const Text('Logged'),
-                ElevatedButton(onPressed: () => {
-                  context.read<AuthBloc>()..add(AuthLogoutRequested()),
-                },
-                child: const Text('Logout')
-                ),
-              ],
-            ),
-          )
+    return const Center(
+      child: Row(
+        children: [
+          Text('Logged'),
+        ],
       ),
     );
   }

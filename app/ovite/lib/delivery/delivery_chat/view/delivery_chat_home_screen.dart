@@ -119,19 +119,10 @@ class _DeliveryChatScreenState extends State<DeliveryChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Chat"),
-          //leading: Icon(Icons.chat, color: connected ? Colors.greenAccent : Colors.redAccent),
-          leading: const Icon(Icons.chat),
-          titleSpacing: 0,
-          backgroundColor: kPrimaryLightColor,
-        ),
-        body: Column(
+    return Column(
           children: [
-            Expanded(
-                child: msgList.isEmpty
-                    ? const Center(
+            Expanded(child: msgList.isEmpty ?
+                 const Center(
                   child: Text(
                     "Welcome, please type your reclamation. Then support will respond as soon as possible.",
                     textAlign: TextAlign.center,
@@ -145,7 +136,7 @@ class _DeliveryChatScreenState extends State<DeliveryChatScreen> {
               ),
             buildSendWidget(),
           ],
-        ),
+        );
         /*body: Container(
           padding: const EdgeInsets.only(top: 60.0),
           child: Stack(children: [
@@ -231,7 +222,6 @@ class _DeliveryChatScreenState extends State<DeliveryChatScreen> {
             )
           ],),
         )*/
-    );
   }
 
   Widget buildMessageListWidget() {
