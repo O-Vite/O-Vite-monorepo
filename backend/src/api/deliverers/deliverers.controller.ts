@@ -9,6 +9,7 @@ import {
 import { TypedParam, TypedRoute } from '@nestia/core';
 import { TId } from 'packages/robusto-crud/base-entity';
 import { DelivererEntity } from 'src/services/database/entities/deliverer.entity';
+import * as bcrypt from 'bcrypt';
 
 type SelectDelivererDto = SelectDto<DelivererEntity>;
 type InsertDelivererDto = InsertDtoWithRelation<DelivererEntity>;
@@ -32,6 +33,9 @@ export class DeliverersController {
 
   @Post()
   async create(@Body() data: InsertDelivererDto) {
+    if (data.user) {
+      data.user.password = await bcrypt.hash(data.user.password, 10);
+    }
     return this.crudator.insert(data);
   }
 

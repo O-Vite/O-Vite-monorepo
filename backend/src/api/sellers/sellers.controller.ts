@@ -11,6 +11,7 @@ import {
 import { TypedParam, TypedRoute } from '@nestia/core';
 import { TId } from 'packages/robusto-crud/base-entity';
 import { SellerEntity } from 'src/services/database/entities/seller.entity';
+import * as bcrypt from 'bcrypt';
 
 type SelectSellersDto = SelectDto<SellerEntity>;
 type InsertSellersDto = InsertDtoWithRelation<SellerEntity>;
@@ -34,6 +35,9 @@ export class SellersController {
 
   @Post()
   async create(@Body() data: InsertSellersDto) {
+    if (data.user) {
+      data.user.password = await bcrypt.hash(data.user.password, 10);
+    }
     return this.crudator.insert(data);
   }
 
