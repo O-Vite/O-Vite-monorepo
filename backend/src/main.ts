@@ -11,6 +11,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+  app.enableCors();
   app.useGlobalFilters(new CustomExceptionFilter());
   await app.listen(process.env.PORT_BACKEND || 3000, '0.0.0.0');
 }
