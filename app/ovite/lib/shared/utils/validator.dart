@@ -39,8 +39,8 @@ class Validator {
     }
   }
 
-  static String? validateText(String value) {
-    if (value.isEmpty) {
+  static String? validateText(String? value) {
+    if (value == null ||  value.isEmpty ) {
       return '🚩 Text is too short.';
     } else {
       return null;

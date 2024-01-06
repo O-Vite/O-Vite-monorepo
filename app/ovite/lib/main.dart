@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ovite/auth/bloc/auth_bloc.dart';
-import 'package:ovite/delivery/delivery_home.dart';
+import 'package:ovite/delivery/delivery.dart';
+import 'package:ovite/delivery/delivery_chat/delivery_chat.dart';
+//import 'package:ovite/delivery/delivery_home.dart';
 import 'package:ovite/login/login.dart';
 import 'package:ovite/register/register.dart';
 import 'package:ovite/shared/splash/view/splash_page.dart';
@@ -46,8 +48,8 @@ class MyHomePage extends StatelessWidget {
       builder: (context, child) {
         return BlocProvider(
           create: (context) => AuthBloc()..add(AuthCheckRequested()),
-          //child: const RegisterScreen(),
-          child: BlocListener<AuthBloc, AuthState>(
+          child: const MaterialApp(home: DeliveryChatScreen()),
+          /*child: BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               switch (state.status) {
                 case AuthStatus.authenticated:
@@ -69,7 +71,7 @@ class MyHomePage extends StatelessWidget {
               }
             },
             child: child,
-          )
+          )*/
         );
       },
       onGenerateRoute: (_) => SplashPage.route(),
