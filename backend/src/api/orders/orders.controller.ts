@@ -1,60 +1,48 @@
-import { Body, Controller, Post, Get } from '@nestjs/common';
-import { robustoCrud } from 'src/services/database/database.service';
-import typia, { createAssertEquals } from 'typia';
-import {
-  InsertDto,
-  InsertDtoWithRelation,
-  SelectDto,
-  UpdateDto,
-  UpdateDtoWithRelation,
-} from 'packages/robusto-dto/types';
-import { TypedParam, TypedRoute } from '@nestia/core';
-import { TId } from 'packages/robusto-crud/base-entity';
-import {
-  OrderEntity,
-  OrderState,
-} from 'src/services/database/entities/order.entity';
-
-type SelectOrderDto = SelectDto<OrderEntity>;
-
-type InsertOrderDto = InsertDtoWithRelation<OrderEntity>;
-
-type UpdateOrderDto = UpdateDtoWithRelation<OrderEntity>;
-//
+// eslint-disable-next-line prettier/prettier
+import { Body, Controller, Post, Get, Param, UseGuards, Request, Patch} from '@nestjs/common';
+import { OrdersService } from './orders.service';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { AuthGuard } from '../../services/guard/auth/auth.guard';
 
 @Controller('orders')
 export class OrdersController {
-  private readonly crudator = robustoCrud({
-    entityDB: OrderEntity,
-    selectKeys: [...typia.misc.literals<keyof SelectOrderDto>()],
-    assertSelectDto: createAssertEquals<SelectOrderDto>(),
-    assertSelectDtoArray: createAssertEquals<SelectOrderDto[]>(),
-    assertInsertDto: createAssertEquals<InsertOrderDto>(),
-    assertUpdateDto: createAssertEquals<UpdateOrderDto>(),
-  });
-
-  @Get()
-  async getAll() {
-    return this.crudator.fetchAll();
-  }
+  constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  async create(@Body() data: InsertOrderDto) {
-    return this.crudator.insert(data);
+  create(@Body() createOrderDto: CreateOrderDto) {
+    return this.ordersService.create(createOrderDto);
   }
 
-  @TypedRoute.Get(':id')
-  async getById(@TypedParam('id') id: TId) {
-    return this.crudator.fetchById(id);
+  @Get('/user/:userId')
+  async findAllByUser(@Param('userId') userId: string) {
+    return this.ordersService.findAllByUser(userId);
   }
 
-  @TypedRoute.Delete(':id')
-  async delete(@TypedParam('id') id: TId) {
-    return this.crudator.delete(id);
+  @Get('/available')
+  @UseGuards(AuthGuard)
+  findAllAvailable() {
+    return this.ordersService.findAllAvailable();
   }
 
-  @TypedRoute.Patch()
-  async update(@TypedParam('id') id: TId, @Body() data: UpdateOrderDto) {
-    return this.crudator.patch(id, data);
+  // ACCEPTATION DES COMMANDES COTE LIVREUR
+  @Post('/accept/:orderId')
+  @UseGuards(AuthGuard)
+  async acceptOrder(@Param('orderId') orderId: string, @Request() req) {
+    const delivererId = req.user.id;
+    return this.ordersService.acceptOrder(orderId, delivererId);
+  }
+
+  // LIVRAISON DE COMMANDES COTE LIVREUR | LA COMMANDE EST ACCEPTÉE
+  @Patch('/deliver/:orderId')
+  @UseGuards(AuthGuard)
+  async deliverOrder(@Param('orderId') orderId: string) {
+    return this.ordersService.deliverOrder(orderId);
   }
 }
+
+// AFFICHER LES COMMANDES COTE CLIENT
+// @Get('/current/:userId')
+// @UseGuards(AuthGuard)
+// async findCurrentOrders(@Param('userId') userId: string) {
+//   return this.ordersService.findCurrentOrdersByUser(userId);
+// }
