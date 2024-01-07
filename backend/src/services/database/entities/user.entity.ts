@@ -2,6 +2,7 @@ import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { ComplainEntity } from './complain.entity';
 import { MessageEntity } from './message.entity';
+import { OrderEntity } from './order.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -58,4 +59,7 @@ export class UserEntity extends BaseEntityRobusto {
 
   @OneToMany(() => MessageEntity, (message: MessageEntity) => message.user)
   messages!: MessageEntity[];
+
+  @OneToMany(() => OrderEntity, (order: OrderEntity) => order.user)
+  orders!: OrderEntity[];
 }

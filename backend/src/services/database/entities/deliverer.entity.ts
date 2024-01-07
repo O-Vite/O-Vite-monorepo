@@ -14,6 +14,6 @@ export class DelivererEntity extends BaseEntityRobusto {
   @JoinColumn()
   user!: UserEntity;
 
-  @OneToMany(() => OrderEntity, (order) => order.deliverer)
-  orders!: OrderEntity[];
+  @OneToMany(() => OrderEntity, (order: OrderEntity) => order.deliverer)
+  orders!: OrderEntity[] | null;
 }

@@ -11,8 +11,8 @@ export class ClientEntity extends BaseEntityRobusto {
   @JoinColumn()
   user!: UserEntity;
 
-  @OneToMany(() => OrderEntity, (order) => order.client, {
+  @OneToMany(() => OrderEntity, (order: OrderEntity) => order.client, {
     onDelete: 'CASCADE',
   })
-  orders!: OrderEntity[];
+  orders!: OrderEntity[] | null;
 }
