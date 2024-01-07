@@ -1,5 +1,14 @@
 // eslint-disable-next-line prettier/prettier
-import { Body, Controller, Post, Get, Param, UseGuards, Request, Patch} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Get,
+  Param,
+  UseGuards,
+  Request,
+  Patch,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { AuthGuard } from '../../services/guard/auth/auth.guard';
@@ -38,11 +47,16 @@ export class OrdersController {
   async deliverOrder(@Param('orderId') orderId: string) {
     return this.ordersService.deliverOrder(orderId);
   }
-}
 
-// AFFICHER LES COMMANDES COTE CLIENT
-// @Get('/current/:userId')
-// @UseGuards(AuthGuard)
-// async findCurrentOrders(@Param('userId') userId: string) {
-//   return this.ordersService.findCurrentOrdersByUser(userId);
-// }
+  @Get('/taken/:delivererId')
+  @UseGuards(AuthGuard)
+  async findTakenOrdersByDeliverer(@Param('delivererId') delivererId: string) {
+    return this.ordersService.findTakenOrdersByDeliverer(delivererId);
+  }
+  // AFFICHER LES COMMANDES COTE CLIENT
+  @Get('/current/:userId')
+  @UseGuards(AuthGuard)
+  async findCurrentOrders(@Param('userId') userId: string) {
+    return this.ordersService.findCurrentOrdersByUser(userId);
+  }
+}

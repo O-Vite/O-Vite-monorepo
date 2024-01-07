@@ -35,7 +35,6 @@ export class OrdersService {
   }
 
   async acceptOrder(orderId: string, userId: string) {
-    // Trouver le livreur par son userId
     const deliverer = await this.delivererRepository.findOne({
       where: { user: { id: userId } },
       relations: ['user'],
@@ -44,16 +43,15 @@ export class OrdersService {
       throw new Error('Livreur non trouvé !');
     }
 
-    // Trouver la commande par son ID
     const order = await this.ordersRepository.findOne({
       where: { id: orderId },
-      relations: ['deliverer'], // Chargez la relation si nécessaire
+      relations: ['deliverer'],
     });
     if (!order) {
       throw new Error('Commande non trouvée !');
     }
 
-    // Mettre à jour la commande avec le deliverer
+    order.state = OrderState.TAKEN;
     order.deliverer = deliverer;
     await this.ordersRepository.save(order);
 
@@ -74,12 +72,25 @@ export class OrdersService {
     await this.ordersRepository.save(order);
     return order;
   }
-}
 
-//   async findCurrentOrdersByUser(userId: string) {
-//     return this.ordersRepository.find({
-//       where: {
-//         userId: userId,
-//         state: OrderState.TAKEN,
-//       },
-//     });
+  async findCurrentOrdersByUser(userId: string) {
+    return this.ordersRepository.find({
+      where: {
+        userId: userId,
+        state: OrderState.TAKEN,
+      },
+    });
+  }
+
+  async findTakenOrdersByDeliverer(
+    delivererId: string,
+  ): Promise<OrderEntity[]> {
+    return this.ordersRepository.find({
+      where: {
+        deliverer: { id: delivererId },
+        state: OrderState.TAKEN,
+      },
+      relations: ['deliverer', 'client', 'orderProducts'],
+    });
+  }
+}

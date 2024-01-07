@@ -77,52 +77,96 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Gestion des Courses'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 1, // Ajustez la flexibilité selon vos besoins
-            child: FutureBuilder<List<Order>>(
-              future: fetchAvailableOrders(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Text('Erreur: ${snapshot.error}');
-                } else if (snapshot.hasData) {
-                  return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      Order order = snapshot.data![index];
-                      return ListTile(
-                        title: Text('Numéro de commande ${order.id}'),
-                        subtitle:
-                            Text('Adresse de livraison : ${order.address}'),
-                        onTap: () => _showAcceptConfirmationDialog(order.id),
-                      );
+    final List<Tab> myTabs = <Tab>[
+      Tab(text: 'Commandes disponibles'),
+      Tab(text: 'Commandes en cours'),
+    ];
+
+    return DefaultTabController(
+      length: myTabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Gestion des Courses'),
+          bottom: TabBar(
+            tabs: myTabs,
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // Premier onglet - Commandes disponibles
+            Column(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: FutureBuilder<List<Order>>(
+                    future: fetchAvailableOrders(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Text('Erreur: ${snapshot.error}');
+                      } else if (snapshot.hasData) {
+                        return ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            Order order = snapshot.data![index];
+                            return ListTile(
+                              title: Text('Numéro de commande ${order.id}'),
+                              subtitle: Text(
+                                  'Adresse de livraison : ${order.address}'),
+                              onTap: () =>
+                                  _showAcceptConfirmationDialog(order.id),
+                            );
+                          },
+                        );
+                      } else {
+                        return Text('Aucune course disponible.');
+                      }
                     },
-                  );
-                } else {
-                  return Text('Aucune course disponible.');
-                }
-              },
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(48.8566, 2.3522), // Coordonnées par défaut
+                      zoom: 12.0,
+                    ),
+                    // Vous pouvez ajouter des marqueurs ici si nécessaire
+                  ),
+                ),
+              ],
             ),
-          ),
-          Expanded(
-            flex: 1, // Ajustez la flexibilité selon vos besoins
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(48.8566, 2.3522), // Coordonnées par défaut
-                zoom: 12.0,
-              ),
-              // Vous pouvez ajouter des marqueurs ici si nécessaire
+
+            // Deuxième onglet - Commandes en cours
+            Column(
+              children: [
+                // Ajoutez ici le code pour afficher les commandes en cours
+                // Vous pouvez réutiliser la logique de récupération des données
+                // similaire à celle du premier onglet, mais pour les commandes en cours.
+                // N'oubliez pas d'ajuster ce code en conséquence.
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+
+  Future<String?> fetchDelivererId(String userId) async {
+    var url = Uri.parse(
+        'http://localhost:3000/deliverer/user/$userId'); // Remplacez l'URL par celle de votre API
+    var response = await http.get(url, headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${UserSession.jwtToken}',
+    });
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      String? delivererId = data['delivererId'];
+      return delivererId;
+    } else {
+      throw Exception('Échec de la récupération du delivererId');
+    }
   }
 }
