@@ -240,10 +240,13 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${UserSession.jwtToken}',
       },
+      body: json.encode({}),
     );
 
     if (response.statusCode == 200) {
-    } else {}
+    } else {
+      print('Erreur');
+    }
 
     void _showFinalizeConfirmationDialog(String orderId) {
       showDialog(
