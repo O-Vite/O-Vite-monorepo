@@ -21,6 +21,7 @@ import { ClientsModule } from './api/clients/clients.module';
 import { ChatsModule } from './api/chats/chats.module';
 import { BrandsModule } from './api/brands/brands.module';
 import { LocationGateway } from './realtime/location/location.gateway';
+import { LocationModule } from './realtime/location/location.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { LocationGateway } from './realtime/location/location.gateway';
     ClientsModule,
     ChatsModule,
     BrandsModule,
+    LocationModule,
   ],
   controllers: [],
   providers: [LocationGateway],
