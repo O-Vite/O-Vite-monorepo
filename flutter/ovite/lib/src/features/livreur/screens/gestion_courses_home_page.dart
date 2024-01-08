@@ -24,7 +24,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
       throw Exception("L'ID de l'utilisateur est nul.");
     }
 
-    var url = Uri.parse('http://localhost:3000/orders/$userId');
+    var url = Uri.parse('http://localhost:3000/orders/getDelivererId/$userId');
     var response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${UserSession.jwtToken}',
@@ -234,8 +234,8 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
   }
 
   void finaliserLivraison(String orderId) async {
-    var response = await http.post(
-      Uri.parse('http://localhost:3000/orders/finalize/$orderId'),
+    var response = await http.patch(
+      Uri.parse('http://localhost:3000/orders/deliver/$orderId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${UserSession.jwtToken}',
