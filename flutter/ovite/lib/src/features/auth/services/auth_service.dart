@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String baseUrl = "http://localhost:3000/auth";
-  final String authBaseUrl = "http://localhost:3000/auth";
-  final String clientsBaseUrl = "http://localhost:3000/clients";
-  final String deliverersBaseUrl = "http://localhost:3000/deliverers";
+  final String baseUrl = "http://10.0.2.2:3000/auth";
+  final String authBaseUrl = "http://10.0.2.2:3000/auth";
+  final String clientsBaseUrl = "http://10.0.2.2:3000/clients";
+  final String deliverersBaseUrl = "http://10.0.2.2:3000/deliverers";
 
   Future<dynamic> register(Map<String, dynamic> userData) async {
     String role = userData['role'];

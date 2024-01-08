@@ -83,7 +83,7 @@ class _SignUpFormState extends State<SignUpForm> {
 
       if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Inscription réussie! Redirection...'),
             duration: Duration(seconds: 2),
           ),
