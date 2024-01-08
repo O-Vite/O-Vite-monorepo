@@ -21,6 +21,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   // Permet de récupérer la valeur de chaque champs et d'appliquer le validateur.
   final _formKeys = GlobalKey<FormState>();
+  bool isPasswordShown = false;
 
   final eventEmailController = TextEditingController();
   final eventPasswordController = TextEditingController();
@@ -32,6 +33,11 @@ class _LoginFormState extends State<LoginForm> {
   void initState() {
     super.initState();
     focusPassword = FocusNode();
+  }
+
+  void onPassShowClicked() {
+    isPasswordShown = !isPasswordShown;
+    setState(() {});
   }
 
   @override
@@ -79,18 +85,24 @@ class _LoginFormState extends State<LoginForm> {
                 padding: const EdgeInsets.symmetric(vertical: defaultPadding),
                 child: TextFormField(
                   //textInputAction: TextInputAction.done,
-                  obscureText: true,
+                  obscureText: !isPasswordShown,
                   cursorColor: kPrimaryColor,
                     focusNode: focusPassword,
                   controller: eventPasswordController,
                   validator: (String? value) {
                     return Validator.validatePassword(value);
                   },
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "Mot de passe",
-                    prefixIcon: Padding(
+                    prefixIcon: const Padding(
                       padding: EdgeInsets.all(defaultPadding),
                       child: Icon(Icons.lock),
+                    ),
+                    suffixIcon: SizedBox(
+                      child: IconButton(
+                        icon: const Icon(Icons.remove_red_eye),
+                        onPressed: onPassShowClicked,
+                      ),
                     ),
                   ),
                 ),

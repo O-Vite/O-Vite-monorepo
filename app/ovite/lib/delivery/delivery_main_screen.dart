@@ -5,6 +5,8 @@ import 'package:ovite/shared/constants/constants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ovite/auth/bloc/auth_bloc.dart';
 
+import 'delivery_order/delivery_order.dart';
+
 class DeliveryMainScreen extends StatefulWidget {
   const DeliveryMainScreen({super.key});
 
@@ -35,7 +37,7 @@ class _DeliveryMainScreenState extends State<DeliveryMainScreen> {
             },),
           ],
         ),
-        body: const [DeliveryHomeScreen(), DeliveryHomeScreen(), DeliveryHomeScreen(), DeliveryChatScreen(), DeliveryHomeScreen(),][_currentIndex],
+        body: const [DeliveryHomeScreen(), DeliveryHomeScreen(), DeliveryOrderScreen(), DeliveryChatScreen(), DeliveryHomeScreen(),][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           selectedItemColor: kPrimaryColor,
           unselectedItemColor: Colors.black,
