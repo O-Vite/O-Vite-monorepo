@@ -13,7 +13,7 @@ class LivreurDashboard extends StatelessWidget {
       children: <Widget>[
         _buildCurrentDeliveryCard(),
         _buildLevelProgress(),
-        _buildStatisticsCard('Nombre total de livraison', '50'),
+        _buildStatisticsCard('Nombre total de livraison', ''),
       ],
     );
   }

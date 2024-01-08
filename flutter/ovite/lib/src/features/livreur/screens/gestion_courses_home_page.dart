@@ -24,8 +24,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
       throw Exception("L'ID de l'utilisateur est nul.");
     }
 
-    var url = Uri.parse(
-        'http://localhost:3000/orders/$userId'); // Remplacez l'URL par celle de votre API
+    var url = Uri.parse('http://localhost:3000/orders/$userId');
     var response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${UserSession.jwtToken}',
@@ -97,23 +96,20 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
                   flex: 1,
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(
-                      target: LatLng(48.8566, 2.3522), // Coordonnées par défaut
+                      target: LatLng(48.8566, 2.3522),
                       zoom: 12.0,
                     ),
-                    // Vous pouvez ajouter des marqueurs ici si nécessaire
+                    //
                   ),
                 ),
               ],
             ),
-
-            // Deuxième onglet - Commandes en cours
             Column(
               children: [
                 Expanded(
                   flex: 1,
                   child: FutureBuilder<List<Order>>(
-                    future: fetchOngoingOrders(
-                        delivererId), // Mettez à jour cette méthode pour utiliser le delivererId
+                    future: fetchOngoingOrders(delivererId),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
@@ -125,15 +121,17 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) {
                             Order order = snapshot.data![index];
-                            return Card(
-                              elevation: 3,
-                              margin: EdgeInsets.all(10),
-                              child: ListTile(
-                                title: Text('Numéro de commande ${order.id}'),
-                                subtitle: Text(
-                                    'Adresse de livraison : ${order.address}'),
-                                // Vous pouvez ajouter d'autres informations de commande ici
-                                // Par exemple, affichez l'état de la commande ou d'autres détails pertinents
+                            return InkWell(
+                              onTap: () => _showOrderDetails(
+                                  order), // Ajoutez la méthode pour afficher les détails de la commande
+                              child: Card(
+                                elevation: 3,
+                                margin: EdgeInsets.all(10),
+                                child: ListTile(
+                                  title: Text('Numéro de commande ${order.id}'),
+                                  subtitle: Text(
+                                      'Adresse de livraison : ${order.address}'),
+                                ),
                               ),
                             );
                           },
@@ -233,5 +231,82 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
     } else {
       throw Exception("Échec du chargement des commandes en cours.");
     }
+  }
+
+  void finaliserLivraison(String orderId) async {
+    var response = await http.post(
+      Uri.parse('http://localhost:3000/orders/finalize/$orderId'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${UserSession.jwtToken}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+    } else {}
+
+    void _showFinalizeConfirmationDialog(String orderId) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Finaliser la livraison'),
+            content:
+                Text('Êtes-vous sûr de vouloir finaliser cette livraison ?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Annuler'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              ElevatedButton(
+                child: Text('Finaliser'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  finaliserLivraison(orderId);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _showOrderDetails(Order order) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Détails de la commande'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Numéro de commande : ${order.id}'),
+              Text('Adresse de livraison : ${order.address}'),
+              // Ajoutez d'autres informations de commande ici
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Fermer'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text('Confirmer la livraison de la commande'),
+              onPressed: () {
+                // Placez ici la logique pour confirmer la livraison de la commande
+                finaliserLivraison(order.id);
+                Navigator.of(context).pop(); // Fermer la boîte de dialogue
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
