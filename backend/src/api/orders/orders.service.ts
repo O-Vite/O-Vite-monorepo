@@ -93,4 +93,10 @@ export class OrdersService {
       relations: ['deliverer', 'client', 'orderProducts'],
     });
   }
+  async findDelivererIdByUserId(userId: string): Promise<string | null> {
+    const deliverer = await this.delivererRepository.findOne({
+      where: { user: { id: userId } },
+    });
+    return deliverer?.id || null;
+  }
 }

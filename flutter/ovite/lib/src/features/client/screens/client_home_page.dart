@@ -53,7 +53,7 @@ class _ClientMainPageState extends State<ClientMainPage> {
                 color: Colors.blue,
               ),
               child: Text(
-                'Nom du Client',
+                '',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -96,7 +96,7 @@ class _ClientMainPageState extends State<ClientMainPage> {
               onTap: () {
                 Navigator.of(context).pop();
                 setState(() {
-                  _currentIndex = 3;
+                  _currentIndex = 2;
                 });
               },
             ),

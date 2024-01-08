@@ -8,6 +8,7 @@ import {
   UseGuards,
   Request,
   Patch,
+  NotFoundException,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -58,5 +59,16 @@ export class OrdersController {
   @UseGuards(AuthGuard)
   async findCurrentOrders(@Param('userId') userId: string) {
     return this.ordersService.findCurrentOrdersByUser(userId);
+  }
+  @Get('/getDelivererId/:userId')
+  async getDelivererIdByUserId(
+    @Param('userId') userId: string,
+  ): Promise<{ delivererId: string | null }> {
+    const delivererId =
+      await this.ordersService.findDelivererIdByUserId(userId);
+    if (!delivererId) {
+      throw new NotFoundException(`Le deliverer n'a pas été trouvé ${userId}`);
+    }
+    return { delivererId };
   }
 }
