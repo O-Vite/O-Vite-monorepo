@@ -24,7 +24,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
       throw Exception("L'ID de l'utilisateur est nul.");
     }
 
-    var url = Uri.parse('http://localhost:3000/orders/getDelivererId/$userId');
+    var url = Uri.parse('http://10.0.2.2:3000/orders/getDelivererId/$userId');
     var response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${UserSession.jwtToken}',
@@ -151,7 +151,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
   }
 
   Future<List<Order>> fetchAvailableOrders() async {
-    var url = Uri.parse('http://localhost:3000/orders/available');
+    var url = Uri.parse('http://10.0.2.2:3000/orders/available');
     var response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${UserSession.jwtToken}',
@@ -193,7 +193,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
   }
 
   void acceptCourse(String courseId) async {
-    var url = Uri.parse('http://localhost:3000/orders/accept/$courseId');
+    var url = Uri.parse('http://10.0.2.2:3000/orders/accept/$courseId');
     var response = await http.post(url,
         headers: {
           'Content-Type': 'application/json',
@@ -219,7 +219,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
       throw Exception("L'ID du livreur est nul.");
     }
 
-    var url = Uri.parse('http://localhost:3000/orders/taken/$delivererId');
+    var url = Uri.parse('http://10.0.2.2:3000/orders/taken/$delivererId');
     var response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${UserSession.jwtToken}',
@@ -235,7 +235,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
 
   void finaliserLivraison(String orderId) async {
     var response = await http.patch(
-      Uri.parse('http://localhost:3000/orders/deliver/$orderId'),
+      Uri.parse('http://10.0.2.2:3000/orders/deliver/$orderId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${UserSession.jwtToken}',
