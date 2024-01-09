@@ -21,6 +21,9 @@ export class AuthController {
   @Public()
   @Post('register')
   register(@Body() registerObj: InsertRegisterDto): Promise<TSignUpResponse> {
+    if (registerObj.role === 'admin') {
+      throw new Error('forbidden');
+    }
     return this.authService.register(registerObj);
   }
 }
