@@ -35,6 +35,9 @@ export class SellersController {
 
   @Post()
   async create(@Body() data: InsertSellersDto) {
+    if (data?.user?.role === 'admin') {
+      throw new Error('forbidden');
+    }
     if (data.user) {
       data.user.password = await bcrypt.hash(data.user.password, 10);
     }
