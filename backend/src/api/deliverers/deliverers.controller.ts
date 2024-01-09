@@ -33,6 +33,9 @@ export class DeliverersController {
 
   @Post()
   async create(@Body() data: InsertDelivererDto) {
+    if (data?.user?.role === 'admin') {
+      throw new Error('forbidden');
+    }
     if (data.user) {
       data.user.password = await bcrypt.hash(data.user.password, 10);
     }
