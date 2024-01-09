@@ -3,6 +3,7 @@ import { ClientEntity } from './client.entity';
 import { DelivererEntity } from './deliverer.entity';
 import { OrderProductEntity } from './order_product.entity';
 import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
+import { UserEntity } from './user.entity';
 
 export enum OrderState {
   PAID = 'paid',
@@ -26,9 +27,23 @@ export class OrderEntity extends BaseEntityRobusto {
   })
   orderProducts!: OrderProductEntity[];
 
-  @ManyToOne(() => ClientEntity, (client) => client.orders)
+  @ManyToOne(() => ClientEntity, (client: ClientEntity) => client.orders)
   client!: ClientEntity;
 
-  @ManyToOne(() => DelivererEntity, (deliverer) => deliverer.orders)
+  @ManyToOne(
+    () => DelivererEntity,
+    (deliverer: DelivererEntity) => deliverer.orders,
+  )
   deliverer!: DelivererEntity;
+
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.orders, {
+    nullable: true,
+  })
+  user?: UserEntity;
+
+  @Column({ nullable: false })
+  userId!: string;
+
+  @OneToMany(() => OrderEntity, (order: OrderEntity) => order.deliverer)
+  orders!: OrderEntity[];
 }

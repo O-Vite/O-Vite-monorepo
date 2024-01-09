@@ -2,7 +2,13 @@ import { Body, Controller, Post, Get } from '@nestjs/common';
 import { robustoCrud } from 'src/services/database/database.service';
 import { SupportEntity } from 'src/services/database/entities/support.entity';
 import typia, { createAssertEquals } from 'typia';
-import { InsertDto, SelectDto, UpdateDto } from 'packages/robusto-dto/types';
+import {
+  InsertDto,
+  InsertDtoWithRelation,
+  SelectDto,
+  UpdateDto,
+  UpdateDtoWithRelation,
+} from 'packages/robusto-dto/types';
 import { TypedParam, TypedRoute } from '@nestia/core';
 import { TId } from 'packages/robusto-crud/base-entity';
 
@@ -20,9 +26,9 @@ import { TId } from 'packages/robusto-crud/base-entity';
 
 type SelectSupportDto = SelectDto<SupportEntity>;
 
-type InsertSupportDto = InsertDto<SupportEntity>;
+type InsertSupportDto = InsertDtoWithRelation<SupportEntity>;
 
-type UpdateSupportDto = UpdateDto<SupportEntity>;
+type UpdateSupportDto = UpdateDtoWithRelation<SupportEntity>;
 
 @Controller('supports')
 export class SupportsController {

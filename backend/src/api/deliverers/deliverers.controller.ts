@@ -1,15 +1,19 @@
 import { Body, Controller, Post, Get } from '@nestjs/common';
 import { robustoCrud } from 'src/services/database/database.service';
 import typia, { createAssertEquals } from 'typia';
-import { InsertDto, SelectDto, UpdateDto } from 'packages/robusto-dto/types';
+import {
+  InsertDtoWithRelation,
+  SelectDto,
+  UpdateDtoWithRelation,
+} from 'packages/robusto-dto/types';
 import { TypedParam, TypedRoute } from '@nestia/core';
 import { TId } from 'packages/robusto-crud/base-entity';
-import { ProductEntity } from 'src/services/database/entities/product.entity';
 import { DelivererEntity } from 'src/services/database/entities/deliverer.entity';
+import * as bcrypt from 'bcrypt';
 
 type SelectDelivererDto = SelectDto<DelivererEntity>;
-type InsertDelivererDto = InsertDto<DelivererEntity>;
-type UpdateDelivererDto = UpdateDto<DelivererEntity>;
+type InsertDelivererDto = InsertDtoWithRelation<DelivererEntity>;
+type UpdateDelivererDto = UpdateDtoWithRelation<DelivererEntity>;
 
 @Controller('deliverers')
 export class DeliverersController {
@@ -29,6 +33,9 @@ export class DeliverersController {
 
   @Post()
   async create(@Body() data: InsertDelivererDto) {
+    if (data.user) {
+      data.user.password = await bcrypt.hash(data.user.password, 10);
+    }
     return this.crudator.insert(data);
   }
 

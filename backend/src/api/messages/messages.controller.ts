@@ -1,15 +1,21 @@
 import { Body, Controller, Post, Get } from '@nestjs/common';
 import { robustoCrud } from 'src/services/database/database.service';
 import typia, { createAssertEquals } from 'typia';
-import { InsertDto, SelectDto, UpdateDto } from 'packages/robusto-dto/types';
+import {
+  InsertDto,
+  InsertDtoWithRelation,
+  SelectDto,
+  UpdateDto,
+  UpdateDtoWithRelation,
+} from 'packages/robusto-dto/types';
 import { TypedParam, TypedRoute } from '@nestia/core';
 import { TId } from 'packages/robusto-crud/base-entity';
 import { ProductEntity } from 'src/services/database/entities/product.entity';
 import { MessageEntity } from 'src/services/database/entities/message.entity';
 
 type SelectMessageDto = SelectDto<MessageEntity>;
-type InsertMessagesDto = InsertDto<MessageEntity>;
-type UpdateMessagesDto = UpdateDto<MessageEntity>;
+type InsertMessagesDto = InsertDtoWithRelation<MessageEntity>;
+type UpdateMessagesDto = UpdateDtoWithRelation<MessageEntity>;
 
 @Controller('messages')
 export class MessagesController {

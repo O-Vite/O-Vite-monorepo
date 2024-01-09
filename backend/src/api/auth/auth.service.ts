@@ -52,6 +52,7 @@ export class AuthService {
 
   async register(user: InsertRegisterDto): Promise<TSignUpResponse> {
     assertEquals<InsertRegisterDto>(user);
+
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const newUser = await RobustoHelper.insert(
       Orm,

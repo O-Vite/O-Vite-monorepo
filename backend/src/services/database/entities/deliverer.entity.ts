@@ -8,13 +8,12 @@ export class DelivererEntity extends BaseEntityRobusto {
   @Column('int')
   kbisNumber!: number;
 
-  @Column('boolean')
-  isVerified!: boolean;
-
-  @OneToOne(() => UserEntity)
+  @OneToOne(() => UserEntity, {
+    cascade: true,
+  })
   @JoinColumn()
   user!: UserEntity;
 
-  @OneToMany(() => OrderEntity, (order) => order.deliverer)
-  orders!: OrderEntity[];
+  @OneToMany(() => OrderEntity, (order: OrderEntity) => order.deliverer)
+  orders!: OrderEntity[] | null;
 }

@@ -1,16 +1,31 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { OrderEntity } from './order.entity';
-import { ProductEntity } from './product.entity';
-import { BaseEntityRobusto } from 'packages/robusto-crud/base-entity';
+import { Product } from '../../../api/products/products.entity';
 
 @Entity('order_product')
-export class OrderProductEntity extends BaseEntityRobusto {
+export class OrderProductEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
   @Column('int')
   quantity!: number;
+
+  @Column('float')
+  price!: number;
 
   @ManyToOne(() => OrderEntity, (order) => order.orderProducts)
   order!: OrderEntity;
 
-  @ManyToOne(() => ProductEntity, (product) => product.orderProducts)
-  product!: ProductEntity;
+  @Column({ type: 'uuid' })
+  productId!: string;
+
+  @ManyToOne(() => Product, (product) => product.orderProducts)
+  @JoinColumn({ name: 'productId' })
+  product!: Product;
 }

@@ -1,48 +1,30 @@
-import { Body, Controller, Post, Get } from '@nestjs/common';
-import { robustoCrud } from 'src/services/database/database.service';
-import typia, { createAssertEquals } from 'typia';
-import { InsertDto, SelectDto, UpdateDto } from 'packages/robusto-dto/types';
-import { TypedParam, TypedRoute } from '@nestia/core';
-import { TId } from 'packages/robusto-crud/base-entity';
-import { ProductEntity } from 'src/services/database/entities/product.entity';
-
-type SelectProductDto = SelectDto<ProductEntity>;
-type InsertProductsDto = InsertDto<ProductEntity>;
-type UpdateProductsDto = UpdateDto<ProductEntity>;
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Res,
+  Param,
+  NotFoundException,
+} from '@nestjs/common';
+import { Response } from 'express';
+import { ProductService } from './products.service';
 
 @Controller('products')
 export class ProductsController {
-  private readonly crudator = robustoCrud({
-    entityDB: ProductEntity,
-    selectKeys: [...typia.misc.literals<keyof SelectProductDto>()],
-    assertSelectDto: createAssertEquals<SelectProductDto>(),
-    assertSelectDtoArray: createAssertEquals<SelectProductDto[]>(),
-    assertInsertDto: createAssertEquals<InsertProductsDto>(),
-    assertUpdateDto: createAssertEquals<UpdateProductsDto>(),
-  });
+  constructor(private productService: ProductService) {}
 
   @Get()
-  async getAll() {
-    return this.crudator.fetchAll();
+  async getAllProducts() {
+    const products = await this.productService.findAll();
+    return products;
   }
 
-  @Post()
-  async create(@Body() data: InsertProductsDto) {
-    return this.crudator.insert(data);
-  }
-
-  @TypedRoute.Get(':id')
-  async getById(@TypedParam('id') id: TId) {
-    return this.crudator.fetchById(id);
-  }
-
-  @TypedRoute.Delete(':id')
-  async delete(@TypedParam('id') id: TId) {
-    return this.crudator.delete(id);
-  }
-
-  @TypedRoute.Patch()
-  async update(@TypedParam('id') id: TId, @Body() data: UpdateProductsDto) {
-    return this.crudator.patch(id, data);
+  @Get(':id')
+  async getProductById(@Param('id') id: string) {
+    const product = await this.productService.findById(id);
+    if (!product) {
+      throw new NotFoundException('Produit non trouvé');
+    }
+    return product;
   }
 }
