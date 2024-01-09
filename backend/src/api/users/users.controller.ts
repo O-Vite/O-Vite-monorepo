@@ -28,6 +28,9 @@ export class UsersController {
 
   @Post()
   async create(@Body() data: UserCreateDto) {
+    if (data.role === 'admin') {
+      throw new Error('forbidden');
+    }
     return this.crudator.insert(data);
   }
 
