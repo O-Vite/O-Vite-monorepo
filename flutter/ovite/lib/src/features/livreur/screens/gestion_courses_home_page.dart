@@ -244,6 +244,7 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
     );
 
     if (response.statusCode == 200) {
+      _showDeliveryConfirmedDialog();
     } else {
       print('Erreur');
     }
@@ -305,6 +306,26 @@ class _GestionDesCoursesPageState extends State<GestionDesCoursesPage> {
                 // Placez ici la logique pour confirmer la livraison de la commande
                 finaliserLivraison(order.id);
                 Navigator.of(context).pop(); // Fermer la boîte de dialogue
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeliveryConfirmedDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Livraison Confirmée'),
+          content: Text('Votre commande a été livrée avec succès.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Ferme le dialogue
               },
             ),
           ],

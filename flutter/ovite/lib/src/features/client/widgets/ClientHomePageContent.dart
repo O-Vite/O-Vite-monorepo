@@ -36,8 +36,7 @@ class Product {
 Future<List<Order>> fetchCurrentOrders() async {
   // Assurez-vous que l'URL correspond à votre endpoint pour récupérer les commandes en cours
   final response = await http.get(
-    Uri.parse(
-        'http://localhost:3000/orders/current/649806d7-df0f-4f77-8a46-32a99f63796e'),
+    Uri.parse('http://localhost:3000/orders/current/${UserSession.userId}'),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${UserSession.jwtToken}',
