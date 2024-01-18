@@ -18,27 +18,28 @@ import {
   FindOperator,
 } from 'typeorm';
 
-type StringNumberBoolean = string | number | boolean;
+type StringNumberBooleanObject = string | number | boolean | object;
+
 export type TObjectValueOperatorWhere<T> =
   | {
       key: keyof T;
       operator: 'LessThan' | 'LessThanOrEqual' | 'MoreThan' | 'MoreThanOrEqual';
-      value: StringNumberBoolean;
+      value: StringNumberBooleanObject;
     }
   | {
       key: keyof T;
       operator: 'Equal' | 'Like' | 'ILike';
-      value: StringNumberBoolean;
+      value: StringNumberBooleanObject;
     }
   | {
       key: keyof T;
       operator: 'Between';
-      value: [StringNumberBoolean, StringNumberBoolean];
+      value: [StringNumberBooleanObject, StringNumberBooleanObject];
     }
   | {
       key: keyof T;
       operator: 'In' | 'Any';
-      value: Array<StringNumberBoolean>;
+      value: Array<StringNumberBooleanObject>;
     }
   | {
       key: keyof T;
@@ -53,7 +54,7 @@ export type TObjectValueOperatorWhere<T> =
   | {
       key: keyof T;
       operator: 'ArrayContains' | 'ArrayContainedBy' | 'ArrayOverlap';
-      value: Array<StringNumberBoolean>;
+      value: Array<StringNumberBooleanObject>;
     }
   | {
       key: keyof T;
@@ -61,10 +62,14 @@ export type TObjectValueOperatorWhere<T> =
       value: TObjectValueOperatorWhere<T>;
     };
 
+export type TUniqueBuildWhereArray = { readonly __tag: unique symbol };
 export const buildWhereArray = <T>(where: TObjectValueOperatorWhere<T>[]) => {
+  assertListWhere(where);
   return where.reduce((arr, el) => {
     return { ...arr, [el.key]: buildWhereFunction(el) };
-  }, {});
+  }, {}) as {
+    [K in keyof T]: FindOperator<any>;
+  } & TUniqueBuildWhereArray;
 };
 
 const buildWhereFunction = <T>(

@@ -1,12 +1,9 @@
-
-
 export type TFn = (...args: any[]) => any;
 
-export type ClassWithStatic<T = unknown> = TClass<T> & {
-  [key: string]: any;
-};
+type FilteredKeys<T> = {
+  [K in keyof T]: T[K] extends never ? never : K;
+}[keyof T];
 
-export type TOmit<T, Keys extends keyof T> = (
-  obj: T,
-  ...keys: Keys[]
-) => Omit<T, Keys>;
+export type RemoveNever<T> = {
+  [K in FilteredKeys<T>]: T[K];
+};
