@@ -55,10 +55,10 @@ const routes = [
   {
     path: "dashboard",
     element: (
-       <AuthGuard>
+      //  <AuthGuard>
         <DashboardLayout />
     
-      </AuthGuard>
+      // </AuthGuard>
     ),
     
     children: [

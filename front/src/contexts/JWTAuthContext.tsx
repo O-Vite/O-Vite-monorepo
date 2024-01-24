@@ -44,7 +44,7 @@ type JWTAuthPayload = {
 type JWTActions = ActionMap<JWTAuthPayload>[keyof ActionMap<JWTAuthPayload>];
 // ================================================
 
-const API_URL = "http://127.0.0.1:8000"
+const API_URL = "http://127.0.0.1:3000"
 
 const initialState: AuthState = {
   isAuthenticated: false,
